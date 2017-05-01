@@ -4,13 +4,28 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/Remote737FMCCDU2.cpp 
+../src/Base64.cpp \
+../src/CharsetTextures.cpp \
+../src/ExtPlaneClient.cpp \
+../src/Remote737FMCCDU2.cpp \
+../src/Screen.cpp \
+../src/TCPClient.cpp 
 
 OBJS += \
-./src/Remote737FMCCDU2.o 
+./src/Base64.o \
+./src/CharsetTextures.o \
+./src/ExtPlaneClient.o \
+./src/Remote737FMCCDU2.o \
+./src/Screen.o \
+./src/TCPClient.o 
 
 CPP_DEPS += \
-./src/Remote737FMCCDU2.d 
+./src/Base64.d \
+./src/CharsetTextures.d \
+./src/ExtPlaneClient.d \
+./src/Remote737FMCCDU2.d \
+./src/Screen.d \
+./src/TCPClient.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
