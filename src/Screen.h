@@ -42,8 +42,12 @@ protected:
 	CharsetTextures * tallChars;
 	CharsetTextures * shortChars;
 
-	int linePos[14] = { 0, 40, 66, 106, 132, 172, 198, 238, 264, 304, 330, 370,
-			396, 436 };
+	// window dimensions
+	int winWidth, winHeight;
+	int cellWidth, winLeftBorder;
+	int tallCellHeight, shortCellHeight, winTopBorder;
+	int shortCharVertOffset;
+	int linePos[15];
 
 
 	Uint32 SDLUserEventBase;
@@ -84,6 +88,9 @@ protected:
 
 	};
 
+protected:
+
+	void calculateDimensions (bool drawGrid);
 
 
 
@@ -100,11 +107,13 @@ public:
 	}
 
 	void init();
-	void run();
+	void mainLoop();
+
+
 	void drawGrid();
 	virtual ~Screen();
 
-	void drawLine(int line, int col, std::string text);
+	void renderTextLine(int line, int col, std::string text);
 
 	/** @brief queue a line update to the screen
 	 *

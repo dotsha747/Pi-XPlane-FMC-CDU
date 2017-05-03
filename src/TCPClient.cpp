@@ -42,11 +42,15 @@ TCPClient::~TCPClient() {
 	// TODO Auto-generated destructor stub
 }
 
-void TCPClient::mainLoop(int * exitFlag) {
+void TCPClient::mainLoop() {
+
+	int exitFlag = 0;
+
+	cerr << "In TCPClient::mainLoop" << endl;
 
 	time_t lastTick = time(NULL);
 
-	while (!(*exitFlag)) {
+	while (!(exitFlag)) {
 
 		// set select() bits
 		fd_set read_fds, write_fds;
@@ -64,8 +68,6 @@ void TCPClient::mainLoop(int * exitFlag) {
 		// figure out timeout till next second
 		timeval timeout = { 0, 10000 }; // sleep for 10 m/s
 
-		clientSock = 0;
-
 		int ret;
 
 		if ((ret = select(clientSock + 1, &read_fds, &write_fds, NULL, &timeout))
@@ -76,7 +78,7 @@ void TCPClient::mainLoop(int * exitFlag) {
 		}
 
 		// exit in last second?
-		if (*exitFlag) {
+		if (exitFlag) {
 			break;
 		}
 

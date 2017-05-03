@@ -108,7 +108,7 @@ public:
 	 * thread or interrupt) to cause the mainLoop() to exit, it should respond within 10 m/s.
 	 */
 
-	void mainLoop (int * exitFlag);
+	virtual void mainLoop ();
 
 
 	/** @brief regular "timer tick" event

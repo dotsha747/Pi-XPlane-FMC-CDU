@@ -30,7 +30,6 @@ private:
 public:
 	static ExtPlaneClient * getInstance() {
 		if (!instance) {
-			syslog (LOG_INFO, "Intantiating ExtPlaneClient");
 			instance = new ExtPlaneClient();
 		}
 		return instance;
@@ -41,12 +40,14 @@ public:
 	void init ();
 	void launchThread ();
 
-	void mainLoop(int * exitFlag);
+	//virtual void mainLoop(int * exitFlag);
 
 	void sendLine (std::string line);
-	void initConnection (time_t time);
-	void processLine (time_t time, std::string line);
-	void processResponse (time_t time, std::string type, std::string dataref, std::string value);
+	virtual void initConnection (time_t time);
+	virtual void dropConnection (time_t time);
+	void goLoop ();
+	virtual void processLine (time_t time, std::string line);
+	virtual void processResponse (time_t time, std::string type, std::string dataref, std::string value);
 protected:
 
 

@@ -29,12 +29,15 @@ using namespace std;
 int main(int argc, char * argv[]) {
 
 
+	Screen::getInstance()->init();
 	ExtPlaneClient::getInstance()->init();
+
+	// launches background thread
 	ExtPlaneClient::getInstance()->launchThread();
 
+	// main SDL loop
+	Screen::getInstance()->mainLoop();
 
-	Screen::getInstance()->init();
-	Screen::getInstance()->run();
 
 	return 0;
 }

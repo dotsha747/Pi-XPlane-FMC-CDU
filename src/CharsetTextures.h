@@ -40,16 +40,19 @@
 
 class CharsetTextures {
 protected:
-	SDL_Texture * charTextures [53];
 
-	void generateTextureForChar (std::string c, int index, TTF_Font * font, SDL_Renderer * renderer, SDL_Color textColor, SDL_Color backgroundColor);
+	int cellWidth;
+	int cellHeight;
+	SDL_Texture * allCharTexture;
+
+	TTF_Font * getFont (std::string fontPath, int colWidth, int MaxHeight, SDL_Renderer * renderer);
+	void generateTextureForChar (std::string c, int index, int rowHeight, TTF_Font * font, SDL_Renderer * renderer, SDL_Color textColor, SDL_Color backgroundColor, SDL_Surface allCharSurface);
+
 public:
-	CharsetTextures(std::string fontPath, int fontHeight, SDL_Renderer * renderer);
+	CharsetTextures(std::string fontPath, SDL_Window * window, SDL_Renderer * renderer, int colWidth, int fontHeight, SDL_Color fgcolor, SDL_Color bgcolor);
 	virtual ~CharsetTextures();
+	void renderCharAt (SDL_Renderer * renderer, char c, int x, int y);
 
-	SDL_Texture * getCharTexture (char c);
-
-	TTF_Font * getFont (std::string fontPath, int MaxHeight, SDL_Renderer * renderer);
 };
 
 #endif /* CHARSETTEXTURES_H_ */

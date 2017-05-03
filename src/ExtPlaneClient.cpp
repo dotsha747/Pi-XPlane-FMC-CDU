@@ -26,7 +26,7 @@ ExtPlaneClient::~ExtPlaneClient() {
 
 void ExtPlaneClient::init() {
 
-	syslog(LOG_INFO, "Initializing ExtPlaneClient");
+	cerr << "In ExtPlaneClient::init" << endl;
 
 	if (hostList.empty()) {
 		hostList.push_back("192.168.1.12");
@@ -34,21 +34,30 @@ void ExtPlaneClient::init() {
 
 	isRunning = false;
 	stopRequested = false;
+
+	cerr << "Finished ExtPlaneClient::init" << endl;
 }
 
 void ExtPlaneClient::launchThread() {
 
+	cerr << "In ExtPlaneClient::launchThread" << endl;
 	if (!isRunning) {
-		std::thread t(&ExtPlaneClient::mainLoop, instance, &stopRequested);
+		std::thread t(&ExtPlaneClient::goLoop, this);
 		t.detach();
 	}
+	cerr << "Finished ExtPlaneClient::goLoop" << endl;
 
 }
 
-void ExtPlaneClient::mainLoop(int * exitFlag) {
 
-	TCPClient::mainLoop(exitFlag);
+void ExtPlaneClient::goLoop() {
+
+	cerr << "In ExPlaneClient::goLoop" << endl;
+	TCPClient::mainLoop();
+	cerr << "Finished ExtPlaneClient::goLoop" << endl;
 }
+
+
 
 void ExtPlaneClient::sendLine(std::string line) {
 	outputBuffer += line;
@@ -58,11 +67,12 @@ void ExtPlaneClient::sendLine(std::string line) {
 
 void ExtPlaneClient::initConnection(time_t time) {
 	TCPClient::initConnection(time);
-	for (int line = 0; line <= 14; line++) {
-		ostringstream buf;
-		buf << "sub FJCC/UFMC/LINE_" << line;
-		sendLine(buf.str());
-	}
+}
+
+
+void ExtPlaneClient::dropConnection (time_t time) {
+	TCPClient::dropConnection (time);
+	cerr << "Connection dropped" << endl;
 }
 
 void ExtPlaneClient::processLine(time_t time, std::string line) {
@@ -71,11 +81,22 @@ void ExtPlaneClient::processLine(time_t time, std::string line) {
 		return;
 	}
 
-	// cerr << "RX " << line.size() << " [" << line << "]" << endl;
+	cerr << "RX " << line.size() << " [" << line << "]" << endl;
 
 	// u{type} {dataref} {value}
 
-	if (line.at(0) == 'u') {
+	if (line == "EXTPLANE 1") {
+
+		// just connected. Subscribe to all the lines of the x737fmc.
+
+		for (int line = 0; line <= 14; line++) {
+			ostringstream buf;
+			buf << "sub FJCC/UFMC/LINE_" << line;
+			sendLine(buf.str());
+		}
+	}
+
+	else if (line.at(0) == 'u') {
 
 		size_t pos1 = line.find_first_of(' ', 0);
 		if (pos1 == string::npos) {
