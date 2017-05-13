@@ -15,6 +15,7 @@
 
 #include "ExtPlaneClient.h"
 #include "Screen.h"
+#include "KeypadScanner.h"
 
 
 
@@ -31,9 +32,11 @@ int main(int argc, char * argv[]) {
 
 	Screen::getInstance()->init();
 	ExtPlaneClient::getInstance()->init();
+	KeypadScanner::getInstance()->init();
 
 	// launches background thread
 	ExtPlaneClient::getInstance()->launchThread();
+	KeypadScanner::getInstance()->launchThread();
 
 	// main SDL loop
 	Screen::getInstance()->mainLoop();

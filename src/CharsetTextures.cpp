@@ -147,6 +147,7 @@ TTF_Font * CharsetTextures::getFont(std::string fontPath, int cellWidth,
 		}
 
 		font = TTF_OpenFont(fontPath.c_str(), size);
+		//TTF_SetFontStyle (font, TTF_STYLE_BOLD);
 		if (font == NULL) {
 			ostringstream buf;
 			buf << "SDL2_TTF could not load font from \"" << fontPath
@@ -164,7 +165,6 @@ TTF_Font * CharsetTextures::getFont(std::string fontPath, int cellWidth,
 		int texW = 0;
 		int texH = 0;
 		SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
-		SDL_Rect dstrect = { 0, 0, texW, texH };
 		SDL_FreeSurface(surface);
 		SDL_DestroyTexture(texture);
 		testHeight = TTF_FontHeight(font);
@@ -210,7 +210,6 @@ void CharsetTextures::renderCharAt(SDL_Renderer * renderer, char c, int x,
 	SDL_Rect dstrect = { x, y, cellWidth, cellHeight };
 
 	SDL_RenderCopy(renderer, allCharTexture, &srcrect, &dstrect);
-	SDL_RenderPresent(renderer);
 
 	cerr << "RenderCopy char " << (int) c << " [" << c << "] from allCharSet ["
 			<< srcrect.x << ", " << srcrect.y << ", " << srcrect.w << ", "

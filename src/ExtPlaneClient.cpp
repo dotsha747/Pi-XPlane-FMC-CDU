@@ -72,7 +72,7 @@ void ExtPlaneClient::initConnection(time_t time) {
 
 void ExtPlaneClient::dropConnection (time_t time) {
 	TCPClient::dropConnection (time);
-	cerr << "Connection dropped" << endl;
+	// cerr << "Connection dropped" << endl;
 }
 
 void ExtPlaneClient::processLine(time_t time, std::string line) {
