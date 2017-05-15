@@ -10,27 +10,13 @@
 #include <iomanip>
 #include <thread>
 
+#include "FMCList.h"
 #include "KeypadScanner.h"
 
 using namespace std;
 
 // initialize statics
 KeypadScanner * KeypadScanner::instance = NULL;
-
-/** TODO:
- * 	- create variable to track "currentlydown" key
- * 	- report on "currentlydown" changed
- *
- * 	- create variable to track "nobodypressed"
- * 	- currentlydown cannot change unless nobodypressed
- *
- * 	- map currentlydown to dataref
- * 	- subscribe to datarefs
- * 	- send keypress to dataref
- *
- * 	- does dataref stay down if button held down?
- *
- */
 
 
 void KeypadScanner::init() {
@@ -83,23 +69,43 @@ void KeypadScanner::mainLoop() {
 	cerr << "In KeypadScanner::mainLoop" << endl;
 	isRunning = true;
 	stopRequested = false;
+	somethingPressed = false;
+
 	while (!stopRequested) {
 
 		// iterate through the columns
+		bool gotPress = false;
 		for (size_t nowCol = 0; nowCol < columnPins.size(); nowCol++) {
 
 			// set the current column to LOW
 			digitalWrite (columnPins[nowCol], 0);
 
 			// go through the rows, see who is low (pressed)
+
 			for (size_t nowRow = 0; nowRow < rowPins.size(); nowRow++) {
 
 				// delay a bit for the GPIO state to settle
 				delayMicroseconds (5);
 				int status = digitalRead (rowPins[nowRow]);
 
+				// something pressed
 				if (status == 0) {
-					cerr << "r=" << nowRow+1 << ",c=" << nowCol+1 << endl;
+					gotPress = true;
+					if (somethingPressed == true) {
+						if (pressedRow == nowRow && pressedCol == nowCol) {
+							// still being pressed, do nothing
+						} else {
+							// multiple keys being pressed or another key pressed
+							// without the earlier being released. Do nothing.
+						}
+					} else {
+						// looks like a new key has been pressed
+						pressedRow = nowRow;
+						pressedCol = nowCol;
+						somethingPressed = true;
+						pressEvent((int) (nowRow+1),(int)( nowCol+1));
+					}
+
 				}
 
 
@@ -111,6 +117,43 @@ void KeypadScanner::mainLoop() {
 
 		}
 
+		if (! gotPress) {
+			// nothing pressed this scan. If something was pressed before, consider
+			// it released.
+			if (somethingPressed) {
+				somethingPressed = false;
+				releaseEvent((int) (pressedRow+1), (int) (pressedCol+1));
+
+			}
+		}
+
 	}
 	cerr << "Finished KeypadScanner::mainLoop" << endl;
+}
+
+
+
+/** @brief handle a key press. units begin with 1, not zero to match schematics.
+ *
+ */
+
+void KeypadScanner::pressEvent (int row, int col) {
+	cerr << "Pressed r=" << row << ", c=" << col << endl;
+
+	// send the keypress to FMC, and let it figure it out.
+	FMCList::getInstance()->keyPressEvent(row, col);
+}
+
+
+
+/** @brief handle a key release. units begin with 1, not zero, to match schematics.
+ *
+ */
+
+
+void KeypadScanner::releaseEvent (int row, int col) {
+	cerr << "Released r=" << row << ", c=" << col << endl;
+
+	// send key release to FMC, and let it figure it out
+	FMCList::getInstance()->keyReleaseEvent(row, col);
 }

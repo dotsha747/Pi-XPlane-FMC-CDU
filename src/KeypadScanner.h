@@ -55,6 +55,10 @@ protected:
 	bool isRunning;
 	bool stopRequested;
 
+	unsigned int pressedRow;
+	unsigned int pressedCol;
+	bool somethingPressed;
+
 public:
 
 	static KeypadScanner * getInstance() {
@@ -71,6 +75,9 @@ public:
 	void mainLoop();
 
 	virtual ~KeypadScanner();
+
+	virtual void pressEvent(int row, int col);
+	virtual void releaseEvent(int row, int col);
 
 
 };

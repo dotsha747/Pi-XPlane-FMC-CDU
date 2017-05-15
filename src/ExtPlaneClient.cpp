@@ -14,6 +14,7 @@
 #include "ExtPlaneClient.h"
 #include "Base64.h"
 #include "Screen.h"
+#include "FMCList.h"
 
 // initialize statics
 ExtPlaneClient * ExtPlaneClient::instance = NULL;
@@ -87,13 +88,8 @@ void ExtPlaneClient::processLine(time_t time, std::string line) {
 
 	if (line == "EXTPLANE 1") {
 
-		// just connected. Subscribe to all the lines of the x737fmc.
-
-		for (int line = 0; line <= 14; line++) {
-			ostringstream buf;
-			buf << "sub FJCC/UFMC/LINE_" << line;
-			sendLine(buf.str());
-		}
+		// just connected. Tell all the FMCs to init themselves.
+		FMCList::getInstance()->init();
 	}
 
 	else if (line.at(0) == 'u') {
