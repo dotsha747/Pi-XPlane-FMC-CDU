@@ -9,7 +9,9 @@
 #include <sstream>
 
 #include "ExtPlaneClient.h"
+#include "LEDs.h"
 #include "X737FMC.h"
+
 
 using namespace std;
 
@@ -40,7 +42,7 @@ X737FMC::X737FMC() {
 	keyInfo [5][3] = "FJCC/UFMC/HOLD";	// sw-21
 	keyInfo [6][3] = "FJCC/UFMC/PROG";	// sw-22
 	keyInfo [7][3] = "FJCC/UFMC/EXEC";	// sw-23
-	keyInfo [8][3] = "FJCC/UFMC/N1"; 	// sw-24
+	keyInfo [8][3] = "FJCC/UFMC/N1"; 	// sw-24 NOTE: THIS IS MISSING FROM x737FMC. Have informed author.
 	keyInfo [1][4] = "FJCC/UFMC/FIX";	// sw-25
 	keyInfo [2][4] = "FJCC/UFMC/PREVPAGE";	// sw-26
 	keyInfo [3][4] = "FJCC/UFMC/NEXTPAGE"; // sw-27
@@ -101,6 +103,7 @@ std::string X737FMC::getName() {
 	return "x737FMC";
 }
 
+
 void X737FMC::init () {
 
 	// subscribe to all the keypad datarefs so we can set them later.
@@ -121,6 +124,10 @@ void X737FMC::init () {
 		buf << "sub FJCC/UFMC/LINE_" << line;
 		ExtPlaneClient::getInstance()->sendLine(buf.str());
 	}
+
+	// subscribe to datarefs for LEDs that x737fmc supports
+	ExtPlaneClient::getInstance()->sendLine("sub FJCC/UFMC/Exec_Light_on");
+	ExtPlaneClient::getInstance()->sendLine("sub FJCC/UFMC/Offset_on");
 
 }
 
@@ -162,4 +169,13 @@ void X737FMC::keyReleaseEvent (int row, int col) {
 void X737FMC::receiveData (time_t time, std::string type, std::string dataref, std::string value) {
 
 	cerr << "X737fmc got [" << dataref << "|" << value << "]" << endl;
+
+	if (dataref == "FJCC/UFMC/Exec_Light_on") {
+		LEDs::getInstance()->setLED(LEDs::LED_EXEC, value=="1");
+	}
+
+	else if (dataref == "FJCC/UFMC/Offset_on") {
+		LEDs::getInstance()->setLED(LEDs::LED_OFST, value=="1");
+
+	}
 }

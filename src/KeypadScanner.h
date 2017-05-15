@@ -14,8 +14,7 @@
 
 class KeypadScanner {
 private:
-	KeypadScanner() {
-	}	 // private so it cannot be called
+	KeypadScanner(); // private so it cannot be called
 
 	KeypadScanner(KeypadScanner const &) {
 	}	 // private so it cannot be called
@@ -70,15 +69,10 @@ public:
 	}
 
 
-	void init();
 	void launchThread();
 	void mainLoop();
 
 	virtual ~KeypadScanner();
-
-	virtual void pressEvent(int row, int col);
-	virtual void releaseEvent(int row, int col);
-
 
 };
 

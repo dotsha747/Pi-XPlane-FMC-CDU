@@ -19,9 +19,7 @@ using namespace std;
 KeypadScanner * KeypadScanner::instance = NULL;
 
 
-void KeypadScanner::init() {
-
-	wiringPiSetup ();
+KeypadScanner::KeypadScanner () {
 
 	// set columns as outputs, HIGH by default
 	for (size_t pin = 0 ; pin < columnPins.size(); pin++) {
@@ -29,7 +27,7 @@ void KeypadScanner::init() {
 		pinMode (columnPins[pin], OUTPUT);
 	}
 
-	// set rows as inputs
+	// set rows as inputs, with Pull-UP enabled.
 	for (size_t pin = 0; pin < rowPins.size(); pin++) {
 		pinMode (rowPins[pin], INPUT);
 		pullUpDnControl (rowPins[pin], PUD_UP);
@@ -45,9 +43,8 @@ KeypadScanner::~KeypadScanner() {
 	// reset the pins to INPUTS before exiting
 	for (size_t pin = 0 ; pin < columnPins.size(); pin++) {
 		digitalWrite (pin, 1);
-		pinMode (pin, INPUT);
 		pullUpDnControl (rowPins[pin], PUD_OFF);
-
+		pinMode (pin, INPUT);
 	}
 
 }
@@ -103,7 +100,9 @@ void KeypadScanner::mainLoop() {
 						pressedRow = nowRow;
 						pressedCol = nowCol;
 						somethingPressed = true;
-						pressEvent((int) (nowRow+1),(int)( nowCol+1));
+
+						// send the keypress to FMC module, and let it figure it out.
+						FMCList::getInstance()->keyPressEvent((int)(nowRow+1), (int)(nowCol+1));
 					}
 
 				}
@@ -122,8 +121,9 @@ void KeypadScanner::mainLoop() {
 			// it released.
 			if (somethingPressed) {
 				somethingPressed = false;
-				releaseEvent((int) (pressedRow+1), (int) (pressedCol+1));
 
+				// send key release to FMC, and let it figure it out
+				FMCList::getInstance()->keyReleaseEvent((int)(pressedRow+1), (int)(pressedCol+1));
 			}
 		}
 
@@ -133,27 +133,6 @@ void KeypadScanner::mainLoop() {
 
 
 
-/** @brief handle a key press. units begin with 1, not zero to match schematics.
- *
- */
-
-void KeypadScanner::pressEvent (int row, int col) {
-	cerr << "Pressed r=" << row << ", c=" << col << endl;
-
-	// send the keypress to FMC, and let it figure it out.
-	FMCList::getInstance()->keyPressEvent(row, col);
-}
 
 
 
-/** @brief handle a key release. units begin with 1, not zero, to match schematics.
- *
- */
-
-
-void KeypadScanner::releaseEvent (int row, int col) {
-	cerr << "Released r=" << row << ", c=" << col << endl;
-
-	// send key release to FMC, and let it figure it out
-	FMCList::getInstance()->keyReleaseEvent(row, col);
-}
