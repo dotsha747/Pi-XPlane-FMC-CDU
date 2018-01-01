@@ -5,8 +5,8 @@
  *      Author: shahada
  */
 
-#ifndef KEYPADSCANNER_H_
-#define KEYPADSCANNER_H_
+#ifndef PIXPLANEFMCCDU_SRC_KEYPADSCANNER_H_
+#define PIXPLANEFMCCDU_SRC_KEYPADSCANNER_H_
 
 #include <syslog.h>
 #include <vector>
@@ -76,4 +76,4 @@ public:
 
 };
 
-#endif /* KEYPADSCANNER_H_ */
+#endif /* PIXPLANEFMCCDU_SRC_KEYPADSCANNER_H_ */

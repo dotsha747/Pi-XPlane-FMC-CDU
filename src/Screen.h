@@ -6,8 +6,8 @@
  *      Author: shahada
  */
 
-#ifndef SCREEN_H_
-#define SCREEN_H_
+#ifndef PIXPLANEFMCCDU_SRC_SCREEN_H_
+#define PIXPLANEFMCCDU_SRC_SCREEN_H_
 
 #include <syslog.h>
 #include <SDL2/SDL.h>
@@ -108,15 +108,11 @@ protected:
 
 	};
 
-protected:
-
-	void calculateDimensions (bool drawGrid);
-
-
 
 public:
 
 
+	void calculateDimensions (int numCols, bool drawGrid = false);
 
 	static Screen * getInstance() {
 		if (!instance) {
@@ -153,6 +149,16 @@ public:
 	 *
 	 */
 	void CompositeLineTexturesToScreenTexture ();
+
+
+	/** @brief clear the screen
+	 *
+	 * For local use.
+	 */
+
+	virtual void clear ();
 };
 
-#endif /* SCREEN_H_ */
+
+
+#endif /* PIXPLANEFMCCDU_SRC_SCREEN_H_ */

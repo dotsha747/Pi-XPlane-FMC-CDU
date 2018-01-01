@@ -7,10 +7,14 @@
 
 #include <iostream>
 #include <sstream>
+#include <regex>
 
 #include "ExtPlaneClient.h"
 #include "LEDs.h"
 #include "X737FMC.h"
+#include "Screen.h"
+#include "Base64.h"
+
 
 
 using namespace std;
@@ -90,6 +94,9 @@ X737FMC::X737FMC() {
 	keyInfo [4][9] = "FJCC/UFMC/2";	// sw-68
 	keyInfo [5][9] = "FJCC/UFMC/3";	// sw-69
 
+	// calls constructor to init LEDs
+	LEDs::getInstance();
+
 
 }
 
@@ -107,28 +114,6 @@ std::string X737FMC::getName() {
 
 void X737FMC::init () {
 
-	// subscribe to all the keypad datarefs so we can set them later.
-
-	for (auto rowV : keyInfo) {
-		for (auto colV : rowV.second) {
-
-			ostringstream buf;
-			buf << "sub " << colV.second;
-			ExtPlaneClient::getInstance()->sendLine(buf.str());
-		}
-	}
-
-	// Subscribe to all the screen lines of the x737fmc.
-
-	for (int line = 0; line <= 14; line++) {
-		ostringstream buf;
-		buf << "sub FJCC/UFMC/LINE_" << line;
-		ExtPlaneClient::getInstance()->sendLine(buf.str());
-	}
-
-	// subscribe to datarefs for LEDs that x737fmc supports
-	ExtPlaneClient::getInstance()->sendLine("sub FJCC/UFMC/Exec_Light_on");
-	ExtPlaneClient::getInstance()->sendLine("sub FJCC/UFMC/Offset_on");
 
 }
 
@@ -136,6 +121,7 @@ void X737FMC::init () {
 void X737FMC::deinit() {
 
 }
+
 
 
 void X737FMC::keyPressEvent (int row, int col) {
@@ -169,7 +155,16 @@ void X737FMC::keyReleaseEvent (int row, int col) {
 
 void X737FMC::receiveData (time_t time, std::string type, std::string dataref, std::string value) {
 
-	cerr << "X737fmc got [" << dataref << "|" << value << "]" << endl;
+	// cerr << "X737fmc got [" << dataref << "|" << value << "]" << endl;
+
+	// extract line number out
+	regex r("^FJCC/UFMC/LINE_(\\d+)$");
+	smatch m;
+	if (regex_match (dataref, m, r)) {
+		int line = stoi (m[1]);
+		Screen::getInstance()->queueLineUpdate (line-1, 0, Base64::decode(value));
+	}
+
 
 	if (dataref == "FJCC/UFMC/Exec_Light_on") {
 		LEDs::getInstance()->setLED(LEDs::LED_EXEC, value=="1");
@@ -179,4 +174,61 @@ void X737FMC::receiveData (time_t time, std::string type, std::string dataref, s
 		LEDs::getInstance()->setLED(LEDs::LED_OFST, value=="1");
 
 	}
+}
+
+
+void X737FMC::subscribe (time_t time) {
+
+
+	// subscribe to all the keypad datarefs so we can set them later.
+
+	for (auto rowV : keyInfo) {
+		for (auto colV : rowV.second) {
+
+			ostringstream buf;
+			buf << "sub " << colV.second;
+			ExtPlaneClient::getInstance()->sendLine(buf.str());
+		}
+	}
+
+	// Subscribe to all the screen lines of the x737fmc.
+
+	for (int line = 0; line <= 14; line++) {
+		ostringstream buf;
+		buf << "sub FJCC/UFMC/LINE_" << line;
+		ExtPlaneClient::getInstance()->sendLine(buf.str());
+	}
+
+	// subscribe to datarefs for LEDs that x737fmc supports
+	ExtPlaneClient::getInstance()->sendLine("sub FJCC/UFMC/Exec_Light_on");
+	ExtPlaneClient::getInstance()->sendLine("sub FJCC/UFMC/Offset_on");
+
+}
+
+
+
+void X737FMC::unsubscribe (time_t time) {
+
+
+	for (auto rowV : keyInfo) {
+		for (auto colV : rowV.second) {
+
+			ostringstream buf;
+			buf << "unsub " << colV.second;
+			ExtPlaneClient::getInstance()->sendLine(buf.str());
+		}
+	}
+
+	// Subscribe to all the screen lines of the x737fmc.
+
+	for (int line = 0; line <= 14; line++) {
+		ostringstream buf;
+		buf << "unsub FJCC/UFMC/LINE_" << line;
+		ExtPlaneClient::getInstance()->sendLine(buf.str());
+	}
+
+	// subscribe to datarefs for LEDs that x737fmc supports
+	ExtPlaneClient::getInstance()->sendLine("unsub FJCC/UFMC/Exec_Light_on");
+	ExtPlaneClient::getInstance()->sendLine("unsub FJCC/UFMC/Offset_on");
+
 }

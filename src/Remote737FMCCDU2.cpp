@@ -14,9 +14,11 @@
 #include <unistd.h>
 #include <wiringPi.h>
 
+
 #include "ExtPlaneClient.h"
 #include "Screen.h"
 #include "KeypadScanner.h"
+#include "FMCList.h"
 
 
 
@@ -28,14 +30,17 @@ using namespace std;
 
 
 
+
 int main(int argc, char * argv[]) {
 
 
 	// initialize wiringPi
 	wiringPiSetup ();
 
+
 	Screen::getInstance()->init();
 	ExtPlaneClient::getInstance()->init();
+	FMCList::getInstance()->init();
 
 	// launches background thread
 	ExtPlaneClient::getInstance()->launchThread();

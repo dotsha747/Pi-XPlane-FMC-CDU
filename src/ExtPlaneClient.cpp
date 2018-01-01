@@ -30,7 +30,7 @@ void ExtPlaneClient::init() {
 	cerr << "In ExtPlaneClient::init" << endl;
 
 	if (hostList.empty()) {
-		hostList.push_back("192.168.1.12");
+		hostList.push_back("192.168.1.10");
 	}
 
 	isRunning = false;
@@ -88,8 +88,12 @@ void ExtPlaneClient::processLine(time_t time, std::string line) {
 
 	if (line == "EXTPLANE 1") {
 
-		// just connected. Tell all the FMCs to init themselves.
-		FMCList::getInstance()->init();
+		// ask for aircraft types.
+		sendLine("sub sim/aircraft/view/acf_descrip");
+		sendLine("sub FJCC/UFMC/PRESENT");
+		sendLine("sub SSG/UFMC/PRESENT");
+		sendLine("sub xfmc/Status"); // XFMC active 0=off 1=on (bit0)
+
 	}
 
 	else if (line.at(0) == 'u') {
@@ -116,16 +120,8 @@ void ExtPlaneClient::processResponse (time_t time, std::string type, std::string
 	// cerr << "Received Type:[" << type << "] dataref:[" << dataref << "] value:[" << value << "]" << endl;
 	// cerr << "Decoded:[" << Base64::decode (value) << "]" << endl;
 
-	// extract line number out
-	regex r("^FJCC/UFMC/LINE_(\\d+)$");
-	smatch m;
-	if (regex_match (dataref, m, r)) {
-		int line = stoi (m[1]);
-		Screen::getInstance()->queueLineUpdate (line-1, 0, Base64::decode(value));
-	}
-
-
-
+	// received data is sent to ALL FMC plugins.
+	FMCList::getInstance()->receiveData(time, type, dataref, value);
 
 
 }

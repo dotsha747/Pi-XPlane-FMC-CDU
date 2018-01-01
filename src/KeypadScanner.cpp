@@ -5,6 +5,7 @@
  *      Author: shahada
  */
 
+#include <SDL/SDL.h>
 #include <wiringPi.h>
 #include <iostream>
 #include <iomanip>
@@ -67,6 +68,7 @@ void KeypadScanner::mainLoop() {
 	isRunning = true;
 	stopRequested = false;
 	somethingPressed = false;
+	// Uint32 pressedTick;
 
 	while (!stopRequested) {
 
@@ -90,7 +92,13 @@ void KeypadScanner::mainLoop() {
 					gotPress = true;
 					if (somethingPressed == true) {
 						if (pressedRow == nowRow && pressedCol == nowCol) {
-							// still being pressed, do nothing
+
+							/*
+							if (nowRow == 1 && nowCol == 7 && (SDL_GetTicks() - pressedTick > 5000)) {
+								FMCList::getInstance()->setFMC(0);
+							}
+							*/
+
 						} else {
 							// multiple keys being pressed or another key pressed
 							// without the earlier being released. Do nothing.
@@ -100,9 +108,13 @@ void KeypadScanner::mainLoop() {
 						pressedRow = nowRow;
 						pressedCol = nowCol;
 						somethingPressed = true;
+						//pressedTick = SDL_GetTicks();
 
 						// send the keypress to FMC module, and let it figure it out.
 						FMCList::getInstance()->keyPressEvent((int)(nowRow+1), (int)(nowCol+1));
+
+						// quick and dirty delay for 5ms to debounce
+						delayMicroseconds (5000);
 					}
 
 				}

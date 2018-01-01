@@ -5,8 +5,8 @@
  *      Author: shahada
  */
 
-#ifndef X737FMC_H_
-#define X737FMC_H_
+#ifndef PIXPLANEFMCCDU_SRC_X737FMC_H_
+#define PIXPLANEFMCCDU_SRC_X737FMC_H_
 
 #include <map>
 #include <vector>
@@ -14,6 +14,8 @@
 #include "AbstractFMC.h"
 
 // @brief driver for Javier Cortés x737FMC, for use with the EADT x737.
+// Note for later: For SSG 748, replace FJCC with SSG in datarefs, i.e.
+// SSG/UFMC/PRESENT.
 
 class X737FMC: public AbstractFMC {
 protected:
@@ -45,6 +47,12 @@ public:
 	// @brief receives datarefs that have changed from ExtPlane.
 	// TODO: *should* be used to update the screen.
 	virtual void receiveData (time_t time, std::string type, std::string dataref, std::string value);
+
+	// @brief subscribes to all datarefs
+	virtual void subscribe (time_t time);
+
+	// @brief unsubscribes to all datarefs
+	virtual void unsubscribe (time_t time);
 };
 
-#endif /* X737FMC_H_ */
+#endif /* PIXPLANEFMCCDU_SRC_X737FMC_H_ */

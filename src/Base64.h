@@ -5,8 +5,8 @@
  *      Author: shahada
  */
 
-#ifndef BASE64_H_
-#define BASE64_H_
+#ifndef PIXPLANEFMCCDU_SRC_BASE64_H_
+#define PIXPLANEFMCCDU_SRC_BASE64_H_
 
 #include <string>
 

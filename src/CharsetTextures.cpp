@@ -211,9 +211,9 @@ void CharsetTextures::renderCharAt(SDL_Renderer * renderer, char c, int x,
 
 	SDL_RenderCopy(renderer, allCharTexture, &srcrect, &dstrect);
 
-	cerr << "RenderCopy char " << (int) c << " [" << c << "] from allCharSet ["
-			<< srcrect.x << ", " << srcrect.y << ", " << srcrect.w << ", "
-			<< srcrect.h << "] to screen at [" << dstrect.x << ", " << dstrect.y
-			<< ", " << dstrect.w << ", " << dstrect.h << "]" << endl;
+	// cerr << "RenderCopy char " << (int) c << " [" << c << "] from allCharSet ["
+	//		<< srcrect.x << ", " << srcrect.y << ", " << srcrect.w << ", "
+	//		<< srcrect.h << "] to screen at [" << dstrect.x << ", " << dstrect.y
+	//		<< ", " << dstrect.w << ", " << dstrect.h << "]" << endl;
 
 }

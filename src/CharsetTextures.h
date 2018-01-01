@@ -5,8 +5,8 @@
  *      Author: shahada
  */
 
-#ifndef CHARSETTEXTURES_H_
-#define CHARSETTEXTURES_H_
+#ifndef PIXPLANEFMCCDU_SRC_CHARSETTEXTURES_H_
+#define PIXPLANEFMCCDU_SRC_CHARSETTEXTURES_H_
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
@@ -55,4 +55,4 @@ public:
 
 };
 
-#endif /* CHARSETTEXTURES_H_ */
+#endif /* PIXPLANEFMCCDU_SRC_CHARSETTEXTURES_H_ */

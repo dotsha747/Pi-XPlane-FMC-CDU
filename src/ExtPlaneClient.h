@@ -5,8 +5,8 @@
  *      Author: shahada
  */
 
-#ifndef EXTPLANECLIENT_H_
-#define EXTPLANECLIENT_H_
+#ifndef PIXPLANEFMCCDU_SRC_EXTPLANECLIENT_H_
+#define PIXPLANEFMCCDU_SRC_EXTPLANECLIENT_H_
 
 #include <syslog.h>
 #include <time.h>
@@ -53,4 +53,4 @@ protected:
 
 };
 
-#endif /* EXTPLANECLIENT_H_ */
+#endif /* PIXPLANEFMCCDU_SRC_EXTPLANECLIENT_H_ */

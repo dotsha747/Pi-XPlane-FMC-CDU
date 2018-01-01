@@ -5,8 +5,8 @@
  *      Author: shahada
  */
 
-#ifndef FMCLIST_H_
-#define FMCLIST_H_
+#ifndef PIXPLANEFMCCDU_SRC_FMCLIST_H_
+#define PIXPLANEFMCCDU_SRC_FMCLIST_H_
 
 #include <stdlib.h>
 #include <vector>
@@ -37,7 +37,7 @@ private:
 			abort();
 	}; // assignment operator is private
 
-	int currentFMC = 0;
+	AbstractFMC * currentFMC = NULL;
 
 
 protected:
@@ -45,6 +45,9 @@ protected:
 
 	// @brief holds the list of FMC implementations.
 	std::vector<AbstractFMC *> fmcs;
+
+	// current aircraft
+	std::string now_acf;
 
 public:
 
@@ -63,6 +66,9 @@ public:
 	// datarefs needed by those FMCs' implementations.
 	virtual void init ();
 
+	// @brief deinitialize. called whenever there is a change in aircraft.
+	virtual void deinit ();
+
 	// @brief called by the KeypadScanner whenever a keypress event is detected.
 	// This calls the current FMC's keyPressEvent method.
 	virtual void keyPressEvent (int row, int col);
@@ -76,7 +82,9 @@ public:
 	virtual void receiveData (time_t time, std::string type, std::string dataref, std::string value);
 
 
+	// @brief make a specific FMC active
+	virtual void setCurrentFMC (AbstractFMC * fmc);
 
 };
 
-#endif /* FMCLIST_H_ */
+#endif /* PIXPLANEFMCCDU_SRC_FMCLIST_H_ */
