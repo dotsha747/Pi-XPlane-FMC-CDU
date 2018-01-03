@@ -5,7 +5,6 @@
  *      Author: shahada
  */
 
-#include <SDL/SDL.h>
 #include <wiringPi.h>
 #include <iostream>
 #include <iomanip>

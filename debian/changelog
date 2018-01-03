@@ -1,0 +1,5 @@
+pi-xplane-fmc-cdu (1.0) UNRELEASED; urgency=medium
+
+  * Initial .deb package. Only "testFMCLEDs" working.
+
+ -- shahada abubakar <shahada@abubakar.net>  Tue, 03 Jan 2018 13:00:00 +0800

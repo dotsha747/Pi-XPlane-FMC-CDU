@@ -19,6 +19,7 @@
 #include "Screen.h"
 #include "KeypadScanner.h"
 #include "FMCList.h"
+#include "XPlaneNetworkClient.h"
 
 
 
@@ -41,10 +42,12 @@ int main(int argc, char * argv[]) {
 	Screen::getInstance()->init();
 	ExtPlaneClient::getInstance()->init();
 	FMCList::getInstance()->init();
+	XPlaneNetworkClient::getInstance()->init();
 
 	// launches background thread
 	ExtPlaneClient::getInstance()->launchThread();
 	KeypadScanner::getInstance()->launchThread();
+	XPlaneNetworkClient::getInstance()->launchThread();
 
 	// main SDL loop
 	Screen::getInstance()->mainLoop();

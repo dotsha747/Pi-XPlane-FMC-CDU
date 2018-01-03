@@ -1,0 +1,15 @@
+Source: ${PACKAGE}
+Maintainer: shahada abubakar <shahada@abubakar.net>
+Section: misc
+Priority: optional
+Standards-Version : 3.9.2
+Homepage: https://github.com/dotsha747/Pi-XPlane-FMC-CDU
+Build-Depends: debhelper (>= 9)
+
+Package: ${PACKAGE}
+Architecture: ${ARCH}
+Depends:	${shlibs:Depends}, 
+		 	${misc:Depends},
+		 	wiringpi
+Description: Raspberry Pi-based External FMC for XPlane
+ Raspberry Pi-based External FMC for XPlane

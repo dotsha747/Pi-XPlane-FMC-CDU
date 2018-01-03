@@ -83,7 +83,7 @@ void Screen::init() {
 	SDL_Color bgColor = { 0, 0, 0 };
 	SDL_Color fgColor = { 0, 255, 0 };
 
-	string fontfile = "SourceSansPro-Semibold.ttf";
+	string fontfile = "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf";
 	tallChars = new CharsetTextures(fontfile, window, renderer, cellWidth,
 			tallCellHeight, fgColor, bgColor);
 	shortChars = new CharsetTextures(fontfile, window, renderer, cellWidth,

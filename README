@@ -1,0 +1,50 @@
+*** Raspberry Pi-based External FMC CDU for XPlane ***
+
+This is the software to accompany my 737 FMC CDU project. Details of the project can be found
+on my blog here: http://blog.shahada.abubakar.net/tag/737fmccdu
+
+
+WARNING: 
+- I'm currently in the middle of refactoring large parts of the code, so it is not functional at all as an FMC for now. 
+- I will update this post when it is usable again.
+
+
+BUILDING FROM SOURCE
+- I suggest just using the prebuilt packages
+- If you really want to build from source, hunt down the dependencies, then do a "make" followed by "make install"
+ 
+
+PREBUILT PACKAGE INSTALLATION
+
+Prebuilt .deb binaries are available for raspbian "Stretch". 
+See [reference to install notes] for more details.
+
+- Install the repository public key:
+  wget -O- http://repo.shahada.abubakar.net/pubkey.asc | sudo apt-key add -
+  
+- Add the APT source:
+  cd /etc/apt/sources.list.d
+  sudo wget http://repo.shahada.abubakar.net/repo.shahada.abubakar.net.sources.list
+  
+- Install the binaries:
+  sudo apt-get update
+  sudo apt-get install pi-xplane-fmc-cdu
+  
+The software can be updated to the latest version at any time by executing:
+  sudo apt-get update; sudo apt-get upgrade
+
+
+TESTING
+
+- Two test programs are currently available:
+
+  testFMCLED
+  - This is a command line test program to test the functionality of the LEDs. 
+
+  testFMCkeypad
+  - This is a command line test program to test the functionality of the keypad.
+
+
+USAGE
+
+  - The main FMC program is not ready for use yet! Watch this space for updates.
