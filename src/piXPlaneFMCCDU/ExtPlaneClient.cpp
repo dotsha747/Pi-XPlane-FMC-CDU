@@ -10,46 +10,58 @@
 #include <iostream>
 #include <sstream>
 #include <regex>
+#include <unistd.h>
 
 #include "ExtPlaneClient.h"
 #include "Base64.h"
 #include "Screen.h"
-#include "FMCList.h"
+
 
 // initialize statics
 ExtPlaneClient * ExtPlaneClient::instance = NULL;
 
 using namespace std;
 
+ExtPlaneClient::ExtPlaneClient (
+		std::string host,
+		int port,
+		std::function <void()> _onConnect,
+		std::function <void()> _onDisconnect,
+		std::function <void (std::string, std::string, std::string)> _receivedData
+) {
+
+	// register our host (as the only one)
+	ostringstream buf;
+	buf << host << ":" << port;
+	addHost(buf.str());
+
+	// record the callback hooks
+	onConnectCallback = _onConnect;
+	onDisconnectCallback = _onDisconnect;
+	receivedDataCallback = _receivedData;
+
+	debug = 1;
+
+	std::thread t(&ExtPlaneClient::goLoop, this);
+	t.detach();
+
+}
+
 ExtPlaneClient::~ExtPlaneClient() {
-	// TODO Auto-generated destructor stub
-}
 
-void ExtPlaneClient::init() {
+	time_t nowTime = time(NULL);
 
-	cerr << "In ExtPlaneClient::init" << endl;
+	// this triggers the thread's mainloop to quit
+	stopRequested = true;
 
-	if (hostList.empty()) {
-		hostList.push_back("192.168.1.10");
+	while (isRunning && time(NULL) < nowTime + 5) {
+		usleep(100000); // 10ms
 	}
 
-	isRunning = false;
-	stopRequested = false;
-
-	cerr << "Finished ExtPlaneClient::init" << endl;
-}
-
-void ExtPlaneClient::launchThread() {
-
-	cerr << "In ExtPlaneClient::launchThread" << endl;
-	if (!isRunning) {
-		std::thread t(&ExtPlaneClient::goLoop, this);
-		t.detach();
+	if (isRunning) {
+		syslog (LOG_ERR, "ExtPlane mainLoop thread failed to stop within 5 seconds");
 	}
-	cerr << "Finished ExtPlaneClient::goLoop" << endl;
-
 }
-
 
 void ExtPlaneClient::goLoop() {
 
@@ -57,8 +69,6 @@ void ExtPlaneClient::goLoop() {
 	TCPClient::mainLoop();
 	cerr << "Finished ExtPlaneClient::goLoop" << endl;
 }
-
-
 
 void ExtPlaneClient::sendLine(std::string line) {
 	outputBuffer += line;
@@ -68,12 +78,15 @@ void ExtPlaneClient::sendLine(std::string line) {
 
 void ExtPlaneClient::initConnection(time_t time) {
 	TCPClient::initConnection(time);
+
+
 }
 
+void ExtPlaneClient::dropConnection(time_t time) {
+	TCPClient::dropConnection(time);
 
-void ExtPlaneClient::dropConnection (time_t time) {
-	TCPClient::dropConnection (time);
-	// cerr << "Connection dropped" << endl;
+	// call the callback hook
+	onDisconnectCallback();
 }
 
 void ExtPlaneClient::processLine(time_t time, std::string line) {
@@ -88,11 +101,16 @@ void ExtPlaneClient::processLine(time_t time, std::string line) {
 
 	if (line == "EXTPLANE 1") {
 
-		// ask for aircraft types.
+		// call the callback hook
+		onConnectCallback();
+
+		// ask for aircraft typesa nd FMC flags
+		/*
 		sendLine("sub sim/aircraft/view/acf_descrip");
 		sendLine("sub FJCC/UFMC/PRESENT");
 		sendLine("sub SSG/UFMC/PRESENT");
 		sendLine("sub xfmc/Status"); // XFMC active 0=off 1=on (bit0)
+		*/
 
 	}
 
@@ -113,15 +131,17 @@ void ExtPlaneClient::processLine(time_t time, std::string line) {
 	}
 }
 
-
-
-void ExtPlaneClient::processResponse (time_t time, std::string type, std::string dataref, std::string value) {
+void ExtPlaneClient::processResponse(time_t time, std::string type,
+		std::string dataref, std::string value) {
 
 	// cerr << "Received Type:[" << type << "] dataref:[" << dataref << "] value:[" << value << "]" << endl;
 	// cerr << "Decoded:[" << Base64::decode (value) << "]" << endl;
 
-	// received data is sent to ALL FMC plugins.
-	FMCList::getInstance()->receiveData(time, type, dataref, value);
+	// if it is base64 encoded, we decode it here.
+	if (type == "ub") {
+		value = Base64::decode (value);
+	}
 
+	receivedDataCallback (type, dataref, value);
 
 }

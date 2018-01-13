@@ -4,14 +4,13 @@
  *  Created on: May 5, 2017
  *      Author: shahada
  */
-
 #include <wiringPi.h>
 #include <iostream>
 #include <iomanip>
 #include <thread>
 
-#include "FMCList.h"
 #include "KeypadScanner.h"
+#include "FMCManager.h"
 
 using namespace std;
 
@@ -20,6 +19,12 @@ KeypadScanner * KeypadScanner::instance = NULL;
 
 
 KeypadScanner::KeypadScanner () {
+
+	pressedCol = -1;
+	pressedRow = -1;
+
+	// initialize wiringPi
+	wiringPiSetup ();
 
 	// set columns as outputs, HIGH by default
 	for (size_t pin = 0 ; pin < columnPins.size(); pin++) {
@@ -42,9 +47,11 @@ KeypadScanner::~KeypadScanner() {
 
 	// reset the pins to INPUTS before exiting
 	for (size_t pin = 0 ; pin < columnPins.size(); pin++) {
+
 		digitalWrite (pin, 1);
 		pullUpDnControl (rowPins[pin], PUD_OFF);
 		pinMode (pin, INPUT);
+
 	}
 
 }
@@ -76,6 +83,7 @@ void KeypadScanner::mainLoop() {
 		for (size_t nowCol = 0; nowCol < columnPins.size(); nowCol++) {
 
 			// set the current column to LOW
+
 			digitalWrite (columnPins[nowCol], 0);
 
 			// go through the rows, see who is low (pressed)
@@ -110,10 +118,11 @@ void KeypadScanner::mainLoop() {
 						//pressedTick = SDL_GetTicks();
 
 						// send the keypress to FMC module, and let it figure it out.
-						FMCList::getInstance()->keyPressEvent((int)(nowRow+1), (int)(nowCol+1));
+						cerr << "Keypress row " << nowRow+1 << " col " << nowCol+1 << endl;
+						FMCManager::getInstance()->keyPressEvent((int)(nowRow+1), (int)(nowCol+1));
 
-						// quick and dirty delay for 5ms to debounce
-						delayMicroseconds (5000);
+						// quick and dirty delay for 10ms to debounce
+						delayMicroseconds (10000);
 					}
 
 				}
@@ -134,7 +143,8 @@ void KeypadScanner::mainLoop() {
 				somethingPressed = false;
 
 				// send key release to FMC, and let it figure it out
-				FMCList::getInstance()->keyReleaseEvent((int)(pressedRow+1), (int)(pressedCol+1));
+				cerr << "KeyRelease row " << pressedRow+1 << " col " <<  pressedCol+1 << endl;
+				FMCManager::getInstance()->keyReleaseEvent((int)(pressedRow+1), (int)(pressedCol+1));
 			}
 		}
 

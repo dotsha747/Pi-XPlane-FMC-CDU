@@ -15,7 +15,14 @@ public:
 	AbstractFMC() {};
 	virtual ~AbstractFMC() {};
 
-	// returns name of FMC plugin
+	/** @brief returns name of FMC plugin.
+	 *
+	 * 	For "actual" FMCs, the name should be 4 characters, as it
+	 * 	needs to fit on the RSKs on the Select screen. This name
+	 * 	is also used as the index into FMCManager's actualFMCs
+	 * 	map, to get to the actual FMC instances.
+	 *
+	 */
 	virtual std::string getName() = 0;
 
 	// called whenever ExtPlane connection established. Doesn't mean that
@@ -24,16 +31,39 @@ public:
 
 	virtual void init () =0;
 
-	// passed all datarefs received frm ExtPlane. This would include common
-	// ones subscribed by ExtPlaneClient such as acf_descrip, and those
-	// requested by plugins during init. Expect to get stuff for other FMCs
-	// in your FMC too, which should be ignored. FMCs should monitor
-	// acf_descrip (and other per-FMC datarefs subscribed to in init) to see if
-	// they are active. Only if they are active (and they should keep track of
-	// this state) should they subscribe to FMC specific datarefs and process
-	// them (to keep the load light when they are not active).
+	/** @brief pass the current host to the fmc.
+	 *
+	 * 	This is to support a hack for zibo. It's called immediately
+	 * 	after init().
+	 */
 
-	virtual void receiveData (time_t time, std::string type, std::string dataref, std::string value) = 0;
+	virtual void initSetHost (std::string host, int port) {};
+
+	/** @brief de-initialize the fmc.
+	 *
+	 * This gets called whenever an FMC is to be removed from the "current"
+	 * screen. Triggered from setCurrentFMC().
+	 *
+	 * */
+
+	virtual void deInit () = 0;
+
+
+	/** @brief subscribe to datarefs
+	 *
+	 * 	all actual FMCs should subscribe to their datarefs here.
+	 * 	It should be called from the actual FMC's init(), but may
+	 * 	also be called from the FMCManager's onExtPlaneConnect()
+	 * 	if the connection is dropped and reestablished.
+	 *
+	 */
+
+	virtual void subscribeDataRefs () {};
+
+	/** @brief called when we receive a float dataref from the server.*/
+
+	virtual void receiveDataRef(std::string type, std::string dataref, std::string value) {};
+
 
 	// these are called ONLY if FMCList thinks this FMC is currently active.
 	// FMC's should call FMCList::setCurrentFMC if they think they are the

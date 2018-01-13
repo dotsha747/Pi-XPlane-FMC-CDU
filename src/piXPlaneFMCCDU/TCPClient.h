@@ -87,6 +87,15 @@ protected:
 	/// internal method called when the socket is available for writing.
 	virtual void eventWrite (time_t time);
 
+	/// flag to indicate thread is running
+	bool isRunning;
+
+	/// flag to indicate thread stop is requested
+	bool stopRequested;
+
+	/// debug level
+	int debug;
+
 public:
 
 	/// constructor
@@ -160,6 +169,15 @@ public:
 	 * outputBuffer.
 	 */
 	virtual void sendData (std::string data);
+
+
+	/** @Brief set debug level
+	 *
+	 */
+
+	virtual void setDebug (int _debug) {
+		debug = _debug;
+	}
 
 
 };

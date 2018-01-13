@@ -7,21 +7,16 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+
 #include <stdio.h>
 #include <iostream>
 #include <unistd.h>
 #include <wiringPi.h>
 
+#include "FMCManager.h"
 
-#include "ExtPlaneClient.h"
 #include "Screen.h"
 #include "KeypadScanner.h"
-#include "FMCList.h"
-#include "XPlaneNetworkClient.h"
-
-
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -30,24 +25,13 @@ const int SCREEN_HEIGHT = 480;
 using namespace std;
 
 
-
-
 int main(int argc, char * argv[]) {
 
+	syslog (LOG_INFO, "=== PiXPlaneFMCCDU is starting. ===");
 
-	// initialize wiringPi
-	wiringPiSetup ();
-
-
-	Screen::getInstance()->init();
-	ExtPlaneClient::getInstance()->init();
-	FMCList::getInstance()->init();
-	XPlaneNetworkClient::getInstance()->init();
-
-	// launches background thread
-	ExtPlaneClient::getInstance()->launchThread();
+	// initialize
+	FMCManager::getInstance();
 	KeypadScanner::getInstance()->launchThread();
-	XPlaneNetworkClient::getInstance()->launchThread();
 
 	// main SDL loop
 	Screen::getInstance()->mainLoop();

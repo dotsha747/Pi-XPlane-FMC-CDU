@@ -8,12 +8,14 @@
 #include <iostream>
 #include <regex>
 #include <sstream>
+#include <algorithm>
+
+#include "Base64.h"
 
 #include "ZiboFMC.h"
-#include "Base64.h"
-#include "ExtPlaneClient.h"
 #include "Screen.h"
-#include "FMCList.h"
+#include "FMCManager.h"
+#include "LEDs.h"
 
 using namespace std;
 
@@ -90,6 +92,8 @@ ZiboFMC::ZiboFMC() {
 	keyInfo[4][9] = "laminar/B738/button/fmc1_2";	// sw-68
 	keyInfo[5][9] = "laminar/B738/button/fmc1_3";	// sw-69
 
+	xplaneUDPClient = NULL;
+
 }
 
 ZiboFMC::~ZiboFMC() {
@@ -98,113 +102,37 @@ ZiboFMC::~ZiboFMC() {
 
 std::string ZiboFMC::getName() {
 
-	return "ZiboFMC";
+	return "ZIBO";
 }
 
 void ZiboFMC::init() {
 
-	// we don't need any datarefs to determine if we are active, other
-	// than acf_descrip.
+	Screen::getInstance()->initialize(24);
+	Screen::getInstance()->clearScreen();
+	LEDs::getInstance()->setAllLEDs(0);
+	subscribeDataRefs();
 }
 
-void ZiboFMC::keyPressEvent(int row, int col) {
-	ostringstream cmd;
-	cmd << "cmd begin " << keyInfo[row][col];
-	ExtPlaneClient::getInstance()->sendLine(cmd.str());
-}
 
-void ZiboFMC::keyReleaseEvent(int row, int col) {
-	ostringstream cmd;
-	cmd << "cmd end " << keyInfo[row][col];
-	ExtPlaneClient::getInstance()->sendLine(cmd.str());
+/** @brief hack to workaround a extplane/zibo bug
+ *
+ */
 
-}
+void ZiboFMC::initSetHost (std::string host, int port) {
 
-void ZiboFMC::receiveData(time_t time, std::string type, std::string dataref,
-		std::string value) {
+	xplaneUDPClient = new XPlaneUDPClient (
+			host, 49000,
+		std::bind (&ZiboFMC::receiveUDPDataRefFloat, this, std::placeholders::_1, std::placeholders::_2),
+		std::bind (&ZiboFMC::receiveUDPDataRefString, this, std::placeholders::_1, std::placeholders::_2)
 
-	// cerr << "ZiboFMC got [" << dataref << "|" << value << "]" << endl;
+	);
 
-	if (dataref == "sim/aircraft/view/acf_descrip") {
-
-		string acf = Base64::decode(value);
-
-		cerr << "ACF is [" << acf << "]" << endl;
-
-		if (acf == "Boeing 737-800X") {
-			cerr << "Aircraft " << value << " is for ZiboFMC!" << endl;
-			subscribe();
-			Screen::getInstance()->calculateDimensions(24);
-			Screen::getInstance()->clear();
-			FMCList::getInstance()->setCurrentFMC (this);
-		} else {
-			unsubscribe();
-		}
-
-		return;
-
-	}
-
-	regex r("^laminar/B738/fmc1/Line(\\d+)_(.)$");
-	smatch m;
-	if (regex_match(dataref, m, r)) {
-
-		int line = stoi(m[1]);
-		string size = m[2];
-		string text = Base64::decode(value);
-
-		cerr << "Line " << line << "[" << size << "]:[" << text << "]" << endl;
-
-		// normal large lines
-		if (size == "L") {
-
-			if (line == 0) {
-				// in zibo, whenever we get line 0, we should take it as the start of a
-				// new page and clear the screen and cache. Otherwise artefacts will remain.
-				// For example: Press Menu followed by Legs.
-				Screen::getInstance()->clear();
-				for (int i = 0; i < 7; i++) {
-					largeLineCache[i] = "";
-				}
-			}
-
-			largeLineCache[line] = text;
-			line = (line) * 2;
-			Screen::getInstance()->queueLineUpdate(line, 0, text);
-
-		}
-
-		// normal small lines
-		else if (size == "X") {
-			line = 1 + ((line - 1) * 2);
-			Screen::getInstance()->queueLineUpdate(line, 0, text);
-		}
-
-		// small font in large line overlay
-		else if (size == "S") {
-			text = mixLargeSmallLines(largeLineCache[line], text);
-			line = (line) * 2;
-			Screen::getInstance()->queueLineUpdate(line, 0, text);
-		}
-
-	}
-
-	else if (dataref == "laminar/B738/fmc1/Line_entry") {
-		string text = Base64::decode(value);
-		cerr << "Line_entry [" << text << "]" << endl;
-	}
-
-	else if (dataref == "laminar/B738/fmc1/Line_entry_I") {
-		string text = Base64::decode(value);
-		cerr << "Line_entry_I [" << text << "]" << endl;
-	}
+	xplaneUDPClient->subscribeDataRef("laminar/B738/fmc1/Line_entry[0][23]", 3);
 
 }
 
 
-
-
-void ZiboFMC::subscribe() {
+void ZiboFMC::subscribeDataRefs() {
 
 	// These are the datarefs that we need when we're active.
 
@@ -212,79 +140,228 @@ void ZiboFMC::subscribe() {
 	// X = Small Lines (maps to odd line numbers)
 	// S = small font on Large Lines
 
-	Screen::getInstance()->clear();
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line00_L");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line00_S");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line01_X");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line02_X");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line03_X");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line04_X");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line05_X");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line06_X");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line01_L");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line02_L");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line03_L");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line04_L");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line05_L");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line06_L");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line01_I");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line02_I");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line03_I");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line04_I");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line05_I");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line06_I");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line01_S");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line02_S");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line03_S");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line04_S");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line05_S");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line06_S");
-	ExtPlaneClient::getInstance()->sendLine("sub laminar/B738/fmc1/Line_entry");
-	ExtPlaneClient::getInstance()->sendLine(
-			"sub laminar/B738/fmc1/Line_entry_I");
-	ExtPlaneClient::getInstance()->sendLine(
-			"sub laminar/B738/indicators/fms_exec_light_pilot");
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line00_L", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line00_S", 1);
+
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_X", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_X", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_X", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_X", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_X", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_X", 1);
+
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_L", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_L", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_L", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_L", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_L", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_L", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_I", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_I", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_I", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_I", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_I", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_I", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_S", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_S", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_S", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_S", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_S", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_S", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_G", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_G", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_G", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_G", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_G", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_G", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_M", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_M", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_M", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_M", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_M", 1);
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_M", 1);
+
+	FMCManager::getInstance()->subscribeDataRef("laminar/B738/indicators/fmc_exec_lights", 1);
+
+}
+
+
+void ZiboFMC::deInit () {
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line00_L");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line00_S");
+
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_X");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_X");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_X");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_X");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_X");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_X");
+
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_L");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_L");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_L");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_L");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_L");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_L");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_I");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_I");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_I");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_I");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_I");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_I");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_S");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_S");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_S");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_S");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_S");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_S");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_G");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_G");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_G");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_G");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_G");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_G");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_M");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_M");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_M");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_M");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_M");
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_M");
+
+	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/indicators/fmc_exec_lights");
+
+	if (xplaneUDPClient != NULL) {
+		delete xplaneUDPClient;
+		xplaneUDPClient = NULL;
+	}
+
+}
+
+void ZiboFMC::keyPressEvent(int row, int col) {
+	auto rowV = keyInfo.find(row);
+	if (rowV == keyInfo.end()) {
+		cerr << "Invalid row " << row << endl;
+		return;
+	}
+
+	auto colV = rowV->second.find(col);
+	if (colV == rowV->second.end()) {
+		cerr << "Invalid col " << col << endl;
+		return;
+	}
+
+	cerr << "zibo keypress on r=" << rowV->first << " c=" << colV->first
+			<< " \"" << colV->second << "\"" << endl;
+
+	FMCManager::getInstance()->sendCommand(colV->second);
+}
+
+void ZiboFMC::keyReleaseEvent(int row, int col) {
+
+	// do nothing?
+}
+
+
+void ZiboFMC::receiveDataRef(std::string type, std::string dataref,
+		std::string value) {
+
+	ostringstream buf;
+	buf << "ZiboFMC got [" << dataref << "|" << value << "]" << endl;
+	syslog (LOG_INFO, "%s", buf.str().c_str());
+
+
+	regex r("^laminar/B738/fmc1/Line(\\d+)_(.)$");
+	smatch m;
+	if (regex_match(dataref, m, r)) {
+
+		int line = stoi(m[1]);
+		string size = m[2];
+
+		// zibo uses '*' for the square entry box. we don't have that
+		// so we use '_' instead.
+		replace (value.begin(), value.end(), '*', '_');
+
+		/* Zibo has a number of datarefs that apply to every line.
+		 * 	X=Small Lines
+		 * 	L=Large
+		 * 	-->G=Green Text in Large Lines
+		 * 	-->M=Magenta Text in Large Lines
+		 * 	-->I=Inverse Text in Large Lines
+		 * 	-->S=Small Text in Large Lines
+		 */
+
+		// normal large lines
+		if (size == "L") {
+
+			// new page
+			if (line == 0) {
+				Screen::getInstance()->clearScreen();
+			}
+
+			line = (line) * 2;
+			Screen::getInstance()->drawLine(0, line, value);
+
+		}
+
+		// normal small lines
+		else if (size == "X") {
+			line = 1 + ((line - 1) * 2);
+			Screen::getInstance()->drawLine(0, line, value);
+		}
+
+		// overlay small font in large line overlay
+		else if (size == "S") {
+			line = (line) * 2;
+			Screen::getInstance()->drawLine(0, line, value, false);
+		}
+
+		// overlay magenta font in large line
+		else if (size == "M") {
+			line = (line) * 2;
+			Screen::getInstance()->drawLine(0, line, value, false, 'M');
+		}
+
+		// overlay green font in large line
+		else if (size == "G") {
+			line = (line) * 2;
+			Screen::getInstance()->drawLine(0, line, value, false, 'G');
+		}
+
+	}
+
+	else if (dataref == "laminar/B738/fmc1/Line_entry") {
+		Screen::getInstance()->drawLine (0, 13, value);
+		cerr << "Line_entry [" << value << "]" << endl;
+
+	}
+
+	else if (dataref == "laminar/B738/indicators/fmc_exec_lights") {
+		LEDs::getInstance()->setLED(LEDs::LED_EXEC, value != "0");
+	}
+
+}
+
+
+void ZiboFMC::receiveUDPDataRefFloat (std::string dataref, float value) {
+
+}
+
+void ZiboFMC::receiveUDPDataRefString (std::string dataref, std::string value) {
+
+	syslog (LOG_INFO, "ZIBO UDP STR [%s] [%s]", dataref.c_str(), value.c_str());
+
+	// pad the value to 24 columns
+	if (value.size() < 24) {
+		value.insert (value.end(), 24-value.size(), ' ');
+	}
+
+	receiveDataRef ("ub", "laminar/B738/fmc1/Line_entry", value);
+
 }
 
 
 
 
-void ZiboFMC::unsubscribe() {
-
-	// These are the datarefs that we need when we're active. When we're
-	// inactive, unsubscribe from them.
-
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line00_L");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line00_S");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line01_X");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line02_X;");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line03_X");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line04_X");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line05_X");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line06_X");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line01_L");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line02_L");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line03_L");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line04_L");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line05_L");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line06_L");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line01_I");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line02_I");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line03_I");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line04_I");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line05_I");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line06_I");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line01_S");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line02_S");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line03_S");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line04_S");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line05_S");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line06_S");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line_entry");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/fmc1/Line_entry_I");
-	ExtPlaneClient::getInstance()->sendLine("unsub laminar/B738/indicators/fms_exec_light_pilot");
-	Screen::getInstance()->clear();
-}
 
 /** @brief Format lines that have large and small text.
  *

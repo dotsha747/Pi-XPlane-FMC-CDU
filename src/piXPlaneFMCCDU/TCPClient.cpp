@@ -30,11 +30,15 @@ TCPClient::TCPClient() {
 	port = 51000;
 	connectTimeout = 60;
 	clientSock = -1;
+	debug = 0;
 	connectState = CONN_DISCONNECTED;
 	wantWrite = false;
 	wantRead = false;
 	EOLString = "\n";
 	lastDataReceivedTime = time(NULL);
+
+	isRunning = false;
+	stopRequested = false;
 
 }
 
@@ -44,13 +48,14 @@ TCPClient::~TCPClient() {
 
 void TCPClient::mainLoop() {
 
-	int exitFlag = 0;
+	isRunning = true;
+	stopRequested = false;
 
 	cerr << "In TCPClient::mainLoop" << endl;
 
 	time_t lastTick = time(NULL);
 
-	while (!(exitFlag)) {
+	while (!stopRequested) {
 
 		// set select() bits
 		fd_set read_fds, write_fds;
@@ -78,7 +83,7 @@ void TCPClient::mainLoop() {
 		}
 
 		// exit in last second?
-		if (exitFlag) {
+		if (stopRequested) {
 			break;
 		}
 
@@ -89,19 +94,25 @@ void TCPClient::mainLoop() {
 			eventTick(nowTime);
 		}
 
-		// check for READ
-		if (FD_ISSET(clientSock, &read_fds)) {
-			eventRead(nowTime);
+
+		if (clientSock != -1) {
+			// check for READ
+			if (FD_ISSET(clientSock, &read_fds)) {
+				eventRead(nowTime);
+			}
+			// check for WRITE
+			if (FD_ISSET(clientSock, &write_fds)) {
+				eventWrite(nowTime);
+			}
+
 		}
 
-		// check for WRITE
-		if (FD_ISSET(clientSock, &write_fds)) {
-			eventWrite(nowTime);
-		}
 
 	} // while not the end
 
 	dropConnection(time(NULL));
+
+	isRunning = false;
 
 }
 
@@ -126,11 +137,10 @@ void TCPClient::eventTick(time_t _time) {
 		// split host and port (if provided)
 		host = hostList[hostNow];
 		port = 51000;
-		if (auto pos = host.find_first_of(':', 0) != string::npos) {
-			cerr << "Extract port [" << host.substr(pos + 1) << "]" << endl;
+		auto pos = host.find_first_of (':');
+		if (pos != string::npos) {
 			port = std::stoi(host.substr(pos + 1));
-			cerr << "Extract host [" << host.substr(0, pos - 1) << "]" << endl;
-			host = host.substr(0, pos - 1);
+			host = host.substr(0, pos);
 		}
 
 		// get socket

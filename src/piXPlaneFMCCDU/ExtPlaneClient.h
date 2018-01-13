@@ -10,46 +10,46 @@
 
 #include <syslog.h>
 #include <time.h>
+#include <functional>
 
 #include "TCPClient.h"
 
-
-class ExtPlaneClient : public TCPClient {
+class ExtPlaneClient: public TCPClient {
 private:
-	ExtPlaneClient() {}; // private so it cannot be called
-	ExtPlaneClient(ExtPlaneClient const &) {}; // private so it cannot be called
-	ExtPlaneClient & operator=(ExtPlaneClient const &) {
-			abort();
-	}; // assignment operator is private
-
 	static ExtPlaneClient * instance;
 
 	bool isRunning = false;
 	int stopRequested = false;
 
+	// callback hooks
+	std::function <void()> onConnectCallback;
+	std::function <void()> onDisconnectCallback;
+	std::function <void (std::string, std::string, std::string)> receivedDataCallback;
+
 public:
-	static ExtPlaneClient * getInstance() {
-		if (!instance) {
-			instance = new ExtPlaneClient();
-		}
-		return instance;
-	}
+	ExtPlaneClient (
+			std::string host,
+			int port,
+			std::function <void()> _onConnect,
+			std::function <void()> _onDisconnect,
+			std::function <void (std::string, std::string, std::string)> _receivedData
+	);
 
 	virtual ~ExtPlaneClient();
 
-	void init ();
-	void launchThread ();
+	void init();
+	void launchThread();
 
 	//virtual void mainLoop(int * exitFlag);
 
-	void sendLine (std::string line);
-	virtual void initConnection (time_t time);
-	virtual void dropConnection (time_t time);
-	void goLoop ();
-	virtual void processLine (time_t time, std::string line);
-	virtual void processResponse (time_t time, std::string type, std::string dataref, std::string value);
+	void sendLine(std::string line);
+	virtual void initConnection(time_t time);
+	virtual void dropConnection(time_t time);
+	void goLoop();
+	virtual void processLine(time_t time, std::string line);
+	virtual void processResponse(time_t time, std::string type,
+			std::string dataref, std::string value);
 protected:
-
 
 };
 

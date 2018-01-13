@@ -51,6 +51,8 @@ public:
 	// @brief method to turn an LED on or off.
 	void setLED (LEDs::LedTypes led, bool on);
 
+	void setAllLEDs (bool on);
+
 };
 
 #endif /* PIXPLANEFMCCDU_SRC_LEDS_H_ */

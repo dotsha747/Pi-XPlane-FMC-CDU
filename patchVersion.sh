@@ -12,3 +12,6 @@ echo " - Patching Makefile with PROJECT=${PROJECT} MAJORVERSION=${MAJORVERSION} 
 sed -i -e "s/^PROJECT=.*/PROJECT=${PROJECT}/" Makefile
 sed -i -e "s/^MAJORVER=.*/MAJORVER=${MAJORVERSION}/" Makefile
 sed -i -e "s/^MINORVER=.*/MINORVER=${MINORVERSION}/" Makefile
+
+sed-i -e "s/^MAJORVERSION \".*\"/MAJORVERSION "${MAJORVERSION}\"/" src/piXPlaneFMCCDU/Version.h 
+sed-i -e "s/^MINORVERSION \".*\"/MINORVERSION "${MAJORVERSION}\"/" src/piXPlaneFMCCDU/Version.h

@@ -20,9 +20,10 @@ PACKAGE=$(shell echo $(PROJECT) | tr A-Z a-z)
 PREFIX=$(DESTDIR)/usr
 CC=g++
 AR=ar
-CFLAGS=-std=c++11 -I src/libsrc -I src/test -O3
+CFLAGS=-std=c++11 -O3 -I. -g
 LIBS= pthread
 LDOPTS=$(patsubst %, -l%, $(LIBS))
+ARCH=$(shell arch)
 
 
 TESTFMCKPDSRCS=$(wildcard src/testFMCKeypad/*.cpp)
@@ -36,27 +37,40 @@ TESTFMCLEDOBJS=$(patsubst %.cpp, %.o, $(TESTFMCLEDSRCS))
 TESTFMCLEDLIBS=wiringPi
 TESTFMCLEDEXE=testFMCLED
 
+MAINSRCS=$(wildcard src/piXPlaneFMCCDU/*.cpp)
+MAINOBJS=$(patsubst %.cpp, %.o, $(MAINSRCS))
+MAINLIBS=pthread SDL2 SDL2_ttf freetype z png pthread XPlaneUDPClient wiringPi  
+#bcm_host vchiq_arm vcos
+MAINLDOPTS=-L /opt/vc/lib
+MAINEXE=piXPlaneFMCCDU
+
 world: all
 
-%.o:%cpp
+.cpp.o:
 	@echo "\t[CC] $<"
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 
-testFMCKeypad: $(TESTFMCKPDOBJS)
-	$(CC) -o $@ $(TESTFMCKPDOBJS) $(patsubst %, -l%, $(TESTFMCKPDLIBS))
+#$(TESTFMCKPDEXE): $(TESTFMCKPDOBJS)
+#	$(CC) -o $@ $(TESTFMCKPDOBJS) $(patsubst %, -l%, $(TESTFMCKPDLIBS))
 
-testFMCLED: $(TESTFMCLEDOBJS)
-	$(CC) -o $@ $(TESTFMCLEDOBJS) $(patsubst %, -l%, $(TESTFMCLEDLIBS))
+#$(TESTFMCLEDEXE): $(TESTFMCLEDOBJS)
+#	$(CC) -o $@ $(TESTFMCLEDOBJS) $(patsubst %, -l%, $(TESTFMCLEDLIBS))
+	
+$(MAINEXE): $(MAINOBJS)
+	$(CC) -o $@ $(MAINOBJS) $(MAINLDOPTS) $(patsubst %, -l%, $(MAINLIBS))
 
-all: testFMCLED testFMCKeypad
+#all: $(TESTFMCKPDEXE) $(TESTFMCLEDEXE) $(MAINEXE) 
+all:  $(MAINEXE)
 
-install: testFMCLED testFMCKeypad
-	install -D testFMCLED $(PREFIX)/bin/testFMCLED
-	install -D testFMCKeypad $(PREFIX)/bin/testFMCKeypad
+#install: testFMCLED testFMCKeypad $(MAINEXE)
+install: testFMCLED $(MAINEXE)
+	install -D $(TESTFMCKPDEXE) $(PREFIX)/bin/$(TESTFMCKPDEXE)
+	install -D $(TESTFMCLEDEXE) $(PREFIX)/bin/$(TESTFMCLEDEXE)
+	install -D $(MAINEXE) $(PREFIX)/bin/$(MAINEXE)
 
 clean: 
-	rm -f $(TESTFMCLEDOBJS) $(TESTFMCKPDOBJS) testFMCLED testFMCKeypad
+	rm -f $(TESTFMCLEDOBJS) $(TESTFMCKPDOBJS) $(MAINOBJS) $(TESTFMCKPDEXE) $(TESTFMCLEDEXE) $(MAINEXE)
 	
 distclean: clean
 

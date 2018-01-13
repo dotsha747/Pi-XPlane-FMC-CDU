@@ -21,6 +21,8 @@ class X737FMC: public AbstractFMC {
 protected:
 	std::map<int, std::map<int, std::string>> keyInfo;
 
+	bool inLegsPage;
+
 public:
 
 	// @brief constructor. Defines the mapping between keypad row/col combinations
@@ -36,7 +38,20 @@ public:
 	// includes datarefs for keypresses, screen lines, and LED indicators.
 	virtual void init ();
 
-	virtual void deinit ();
+	virtual void subscribeDataRefs();
+
+	/** @brief de-initialize the fmc.
+	 *
+	 * This gets called whenever an FMC is to be removed from the "current"
+	 * screen. Triggered from setCurrentFMC().
+	 *
+	 * */
+
+	virtual void deInit ();
+
+	/** @brief called when we receive a float dataref from the server.*/
+
+	virtual void receiveDataRef(std::string type, std::string dataref, std::string value);
 
 	// @brief called when keypress detected. Translates to which key was pressed and sends command to ExtPlane to trigger the keypress.
 	virtual void keyPressEvent (int row, int col);
@@ -44,15 +59,8 @@ public:
 	// @brief called when key release detected. Does nothing in x737FMC.
 	virtual void keyReleaseEvent (int row, int col);
 
-	// @brief receives datarefs that have changed from ExtPlane.
-	// TODO: *should* be used to update the screen.
-	virtual void receiveData (time_t time, std::string type, std::string dataref, std::string value);
 
-	// @brief subscribes to all datarefs
-	virtual void subscribe (time_t time);
 
-	// @brief unsubscribes to all datarefs
-	virtual void unsubscribe (time_t time);
 };
 
 #endif /* PIXPLANEFMCCDU_SRC_X737FMC_H_ */
