@@ -1,9 +1,3 @@
-/*
- * Base64Decode.h
- *
- *  Created on: May 2, 2017
- *      Author: shahada
- */
 
 #ifndef PIXPLANEFMCCDU_SRC_BASE64_H_
 #define PIXPLANEFMCCDU_SRC_BASE64_H_

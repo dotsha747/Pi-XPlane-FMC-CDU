@@ -1,8 +1,23 @@
 /*
- * FMCManager.cpp
- *
- *  Created on: Jan 7, 2018
- *      Author: shahada
+ This file is part of Pi-XPlane-FMC-CDU
+ A Raspberry Pi-based External FMC for XPlane
+
+ Copyright (C) 2017-2018 shahada abubakar
+ <shahada@abubakar.net>
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
  */
 
 #include <sstream>
@@ -17,6 +32,7 @@
 
 #include "ZiboFMC.h"
 #include "X737FMC.h"
+#include "XfmcFMC.h"
 
 using namespace std;
 
@@ -39,6 +55,7 @@ FMCManager::FMCManager() {
 	// create all the actual FMCs
 	actualFMCs.insert(pair<std::string, AbstractFMC *> ("Zibo", new ZiboFMC()));
 	actualFMCs.insert(pair<std::string, AbstractFMC *> ("X737", new X737FMC()));
+	actualFMCs.insert(pair<std::string, AbstractFMC *> ("XFMC", new XfmcFMC()));
 
 	hackHost = "";
 	hackPort = 0;
@@ -90,7 +107,7 @@ void FMCManager::tick() {
 
 	// we're only ever in splashFMC on startup, so this should
 	// happen only once.
-	if (currentFMC == splashFMC && nowTime > timeStarted +1) {
+	if (currentFMC == splashFMC && nowTime > timeStarted +4) {
 		gotoMainFMC();
 		// initialize X-Plane Beacon Listener
 		XPlaneBeaconListener::getInstance()->registerNotificationCallback(

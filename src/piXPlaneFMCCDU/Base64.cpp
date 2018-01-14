@@ -1,9 +1,3 @@
-/*
- * Base64Decode.cpp
- *
- *  Created on: May 2, 2017
- *      Author: shahada
- */
 
 #include "Base64.h"
 

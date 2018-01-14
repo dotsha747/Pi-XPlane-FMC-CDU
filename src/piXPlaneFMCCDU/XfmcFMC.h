@@ -20,31 +20,28 @@
 
  */
 
-#ifndef PIXPLANEFMCCDU_SPLASHFMC_H_
-#define PIXPLANEFMCCDU_SPLASHFMC_H_
+#ifndef PIXPLANEFMCCDU_XFMCFMC_H_
+#define PIXPLANEFMCCDU_XFMCFMC_H_
 
-#include <string>
 #include "AbstractFMC.h"
 
-class SplashFMC : public AbstractFMC {
+class XfmcFMC: public AbstractFMC {
 protected:
-	int numCols;
+
 public:
-	SplashFMC();
-	virtual ~SplashFMC();
+	XfmcFMC();
+	virtual ~XfmcFMC();
 
 	virtual std::string getName() {
-		return "SplashFMC";
-	};
+		return "XFMC";
+	}
 
-	virtual void init();
+	virtual void init ();
 	virtual void deInit ();
-	virtual void receiveData (time_t time, std::string type, std::string dataref, std::string value);
+	virtual void receiveDataRef(std::string type, std::string dataref, std::string value);
+
 	virtual void keyPressEvent (int row, int col);
 	virtual void keyReleaseEvent (int row, int col);
-
-	virtual void drawCenteredText(int line, std::string text);
-
 };
 
-#endif /* PIXPLANEFMCCDU_SPLASHFMC_H_ */
+#endif /* PIXPLANEFMCCDU_XFMCFMC_H_ */
