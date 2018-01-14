@@ -51,20 +51,19 @@ world: all
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 
-#$(TESTFMCKPDEXE): $(TESTFMCKPDOBJS)
-#	$(CC) -o $@ $(TESTFMCKPDOBJS) $(patsubst %, -l%, $(TESTFMCKPDLIBS))
+$(TESTFMCKPDEXE): $(TESTFMCKPDOBJS)
+	$(CC) -o $@ $(TESTFMCKPDOBJS) $(patsubst %, -l%, $(TESTFMCKPDLIBS))
 
-#$(TESTFMCLEDEXE): $(TESTFMCLEDOBJS)
-#	$(CC) -o $@ $(TESTFMCLEDOBJS) $(patsubst %, -l%, $(TESTFMCLEDLIBS))
+$(TESTFMCLEDEXE): $(TESTFMCLEDOBJS)
+	$(CC) -o $@ $(TESTFMCLEDOBJS) $(patsubst %, -l%, $(TESTFMCLEDLIBS))
 	
 $(MAINEXE): $(MAINOBJS)
 	$(CC) -o $@ $(MAINOBJS) $(MAINLDOPTS) $(patsubst %, -l%, $(MAINLIBS))
 
-#all: $(TESTFMCKPDEXE) $(TESTFMCLEDEXE) $(MAINEXE) 
-all:  $(MAINEXE)
+all: $(TESTFMCKPDEXE) $(TESTFMCLEDEXE) $(MAINEXE) 
 
-#install: testFMCLED testFMCKeypad $(MAINEXE)
-install: testFMCLED $(MAINEXE)
+
+install: $(TESTFMCLEDEXE) $(TESTFMCKPDEXE) $(MAINEXE)
 	install -D $(TESTFMCKPDEXE) $(PREFIX)/bin/$(TESTFMCKPDEXE)
 	install -D $(TESTFMCLEDEXE) $(PREFIX)/bin/$(TESTFMCLEDEXE)
 	install -D $(MAINEXE) $(PREFIX)/bin/$(MAINEXE)
