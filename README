@@ -1,17 +1,15 @@
 *** Raspberry Pi-based External FMC CDU for XPlane ***
 
 This is the software to accompany my 737 FMC CDU project. Details of the project can be found
-on my blog here: http://blog.shahada.abubakar.net/tag/737fmccdu
+on my blog here: http://blog.shahada.abubakar.net/tag/737fmccdu.
 
-
-WARNING: 
-- I'm currently in the middle of refactoring large parts of the code, so it is not functional at all as an FMC for now. 
-- I will update this post when it is usable again.
+- 3D Printed faceplate model can be found here: https://www.thingiverse.com/thing:774564
+- PCB Circuit board Schematic and Layout files can be found here: https://easyeda.com/dotsha747/737FMCCDU_V2-83f14eb14ced4e928df00539a30b3de3 (You may also order PCBs Online).
 
 
 BUILDING FROM SOURCE
-- I suggest just using the prebuilt packages
-- If you really want to build from source, hunt down the dependencies, then do a "make" followed by "make install"
+- I suggest just using the prebuilt packages (see below).
+- If you really want to build from source, hunt down the dependencies, then do a "make" followed by "sudo make install"
  
 
 PREBUILT PACKAGE INSTALLATION
@@ -47,4 +45,4 @@ TESTING
 
 USAGE
 
-  - The main FMC program is not ready for use yet! Watch this space for updates.
+  - The main application is started by executing "piXPlaneFMCCDU".

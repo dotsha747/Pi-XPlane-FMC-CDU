@@ -18,6 +18,7 @@ Depends:	${shlibs:Depends},
 		 	libxplane-udp-client1,
 		 	libxplane-udp-client1-bin,
 		 	libsdl2-rpifb,
-			libsdl2-rpifb-ttf
+			libsdl2-rpifb-ttf,
+			fonts-liberation2
 Description: Raspberry Pi-based External FMC for XPlane
  Raspberry Pi-based External FMC for XPlane

@@ -335,9 +335,10 @@ void Screen::doInit(SDL_Event * event) {
 		// search for our font file. We prefer to use LiberationSans-Regular. Try the default
 		// location in raspbian first, falling back to the Ubuntu location.
 		struct stat buffer;
-		string fontPath = "NimbusSanL-Regu.ttf";
+		string fontPath;
+		fontPath = "NimbusSanL-Regu.ttf";
 		if (stat(fontPath.c_str(), &buffer) != 0) {
-			string fontPath =
+			fontPath =
 					"/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf";
 			if (stat(fontPath.c_str(), &buffer) != 0) {
 				fontPath =
