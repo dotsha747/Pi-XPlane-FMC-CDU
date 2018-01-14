@@ -39,9 +39,6 @@ KeypadScanner::KeypadScanner () {
 	pressedCol = -1;
 	pressedRow = -1;
 
-	// initialize wiringPi
-	wiringPiSetup ();
-
 	// set columns as outputs, HIGH by default
 	for (size_t pin = 0 ; pin < columnPins.size(); pin++) {
 		digitalWrite (columnPins[pin], 1);

@@ -42,6 +42,9 @@ int main(int argc, char * argv[]) {
 
 	syslog (LOG_INFO, "=== PiXPlaneFMCCDU is starting. ===");
 
+	// initialize wiringPi
+	wiringPiSetup ();
+
 	// initialize
 	FMCManager::getInstance();
 	KeypadScanner::getInstance()->launchThread();
