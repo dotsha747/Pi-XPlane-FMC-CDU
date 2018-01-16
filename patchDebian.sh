@@ -27,3 +27,7 @@ for dotinstall in debian/control debian/*install ; do
 					-e "s/\${ARCH}/${ARCH}/" $dotinstall
 done
 
+sed -i \
+	-e "s/#define MAJORVERSION.*/#define MAJORVERSION \"${MAJORVERSION}\"/" \
+	-e "s/#define MINORVERSION.*/#define MINORVERSION \"${MINORVERSION}\"/" \
+	src/piXPlaneFMCCDU/Version.h

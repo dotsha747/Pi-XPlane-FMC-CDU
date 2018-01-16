@@ -15,7 +15,7 @@ BUILDING FROM SOURCE
 PREBUILT PACKAGE INSTALLATION
 
 Prebuilt .deb binaries are available for raspbian "Stretch". 
-See [reference to install notes] for more details.
+See http://blog.shahada.abubakar.net/post/installing-pixplanefmccdu-software for more details.
 
 - Install the repository public key:
   wget -O- http://repo.shahada.abubakar.net/pubkey.asc | sudo apt-key add -
