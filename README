@@ -12,7 +12,7 @@ BUILDING FROM SOURCE
 - If you really want to build from source, hunt down the dependencies, then do a "make" followed by "sudo make install"
  
 
-PREBUILT PACKAGE INSTALLATION
+PREBUILT PACKAGE QUICK INSTALLATION
 
 Prebuilt .deb binaries are available for raspbian "Stretch". 
 See http://blog.shahada.abubakar.net/post/installing-pixplanefmccdu-software for more details.
@@ -46,3 +46,5 @@ TESTING
 USAGE
 
   - The main application is started by executing "piXPlaneFMCCDU".
+	
+	- Read the Installation Guide to have the software start automatically when the Pi is powered on.

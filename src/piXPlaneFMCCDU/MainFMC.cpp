@@ -200,7 +200,7 @@ void MainFMC::keyPressEvent(int row, int col) {
 	// RSK6, "Shutdown"
 	else if (row == 4 && col == 2) {
 		syslog(LOG_INFO, "SHUTDOWN requested");
-		Screen::getInstance()->quitLoop();
+		system ("/sbin/shutdown -h now");
 	}
 
 	// EXEC

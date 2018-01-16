@@ -67,6 +67,7 @@ install: $(TESTFMCLEDEXE) $(TESTFMCKPDEXE) $(MAINEXE)
 	install -D $(TESTFMCKPDEXE) $(PREFIX)/bin/$(TESTFMCKPDEXE)
 	install -D $(TESTFMCLEDEXE) $(PREFIX)/bin/$(TESTFMCLEDEXE)
 	install -D $(MAINEXE) $(PREFIX)/bin/$(MAINEXE)
+	install -D root/etc/systemd/system/piXPlaneFMCCDU.service $(PREFIX)/../etc/systemd/system/piXPlaneFMCCDU.service
 
 clean: 
 	rm -f $(TESTFMCLEDOBJS) $(TESTFMCKPDOBJS) $(MAINOBJS) $(TESTFMCKPDEXE) $(TESTFMCLEDEXE) $(MAINEXE)
