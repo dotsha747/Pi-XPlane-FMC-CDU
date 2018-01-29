@@ -53,7 +53,8 @@ FMCManager::FMCManager() {
 	gotoSplashFMC();
 
 	// create all the actual FMCs
-	actualFMCs.insert(pair<std::string, AbstractFMC *> ("Zibo", new ZiboFMC()));
+	actualFMCs.insert(pair<std::string, AbstractFMC *> ("ZIB0", new ZiboFMC(true)));
+	actualFMCs.insert(pair<std::string, AbstractFMC *> ("ZIB1", new ZiboFMC(false)));
 	actualFMCs.insert(pair<std::string, AbstractFMC *> ("X737", new X737FMC()));
 	actualFMCs.insert(pair<std::string, AbstractFMC *> ("XFMC", new XfmcFMC()));
 
@@ -177,9 +178,11 @@ void FMCManager::receiveDataFromServer(std::string type, std::string dataref, st
 
 		// Zibo
 		if (value == "Boeing 737-800X") {
-			mainFMC->onDetectFMC ("Zibo", true);
+			mainFMC->onDetectFMC ("ZIB0", true);
+			mainFMC->onDetectFMC ("ZIB1", true);
 		} else {
-			mainFMC->onDetectFMC ("Zibo", false);
+			mainFMC->onDetectFMC ("Zib0", false);
+			mainFMC->onDetectFMC ("Zib1", false);
 		}
 
 		setCurrentFMC (mainFMC);

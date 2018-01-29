@@ -34,78 +34,80 @@
 
 using namespace std;
 
-ZiboFMC::ZiboFMC() {
+ZiboFMC::ZiboFMC(bool isCaptain) {
+
+	side = isCaptain ? "1" : "2";
 
 	// populate keyInfo
-	keyInfo[1][1] = "laminar/B738/button/fmc1_1L";	// sw-1
-	keyInfo[2][1] = "laminar/B738/button/fmc1_2L";	// sw-2
-	keyInfo[3][1] = "laminar/B738/button/fmc1_3L"; // sw-3
-	keyInfo[4][1] = "laminar/B738/button/fmc1_4L"; 	// sw-4
-	keyInfo[5][1] = "laminar/B738/button/fmc1_5L"; 	// sw-5
-	keyInfo[6][1] = "laminar/B738/button/fmc1_6L"; 	// sw-6
-	keyInfo[7][1] = "laminar/B738/button/fmc1_1R"; 	// sw-7
-	keyInfo[8][1] = "laminar/B738/button/fmc1_2R"; 	// sw-8
-	keyInfo[1][2] = "laminar/B738/button/fmc1_3R"; 	// sw-9
-	keyInfo[2][2] = "laminar/B738/button/fmc1_4R";	// sw-10
-	keyInfo[3][2] = "laminar/B738/button/fmc1_5R"; 	// sw-11
-	keyInfo[4][2] = "laminar/B738/button/fmc1_6R"; 	// sw-12
-	keyInfo[5][2] = "laminar/B738/button/fmc1_init_ref"; 	// sw-13
-	keyInfo[6][2] = "laminar/B738/button/fmc1_rte";	// sw-14
-	keyInfo[7][2] = "laminar/B738/button/fmc1_clb"; 	// sw-15
-	keyInfo[8][2] = "laminar/B738/button/fmc1_crz";	// sw-16
-	keyInfo[1][3] = "laminar/B738/button/fmc1_des";	// sw-17
-	keyInfo[2][3] = "laminar/B738/button/fmc1_menu";	// sw-18
-	keyInfo[3][3] = "laminar/B738/button/fmc1_legs"; // sw-19
-	keyInfo[4][3] = "laminar/B738/button/fmc1_dep_app";	// sw-20
-	keyInfo[5][3] = "laminar/B738/button/fmc1_hold";	// sw-21
-	keyInfo[6][3] = "laminar/B738/button/fmc1_prog";	// sw-22
-	keyInfo[7][3] = "laminar/B738/button/fmc1_exec";	// sw-23
-	keyInfo[8][3] = "laminar/B738/button/fmc1_n1_lim"; // sw-24
-	keyInfo[1][4] = "laminar/B738/button/fmc1_fix";	// sw-25
-	keyInfo[2][4] = "laminar/B738/button/fmc1_prev_page";	// sw-26
-	keyInfo[3][4] = "laminar/B738/button/fmc1_next_page"; // sw-27
-	keyInfo[4][4] = "laminar/B738/button/fmc1_A";	// sw-28
-	keyInfo[5][4] = "laminar/B738/button/fmc1_B";	// sw-29
-	keyInfo[6][4] = "laminar/B738/button/fmc1_C";	// sw-30
-	keyInfo[7][4] = "laminar/B738/button/fmc1_D";	// sw-31
-	keyInfo[8][4] = "laminar/B738/button/fmc1_E";	// sw32
-	keyInfo[1][5] = "laminar/B738/button/fmc1_F";	// sw-33
-	keyInfo[2][5] = "laminar/B738/button/fmc1_G";	// sw-34
-	keyInfo[3][5] = "laminar/B738/button/fmc1_H";	// sw-35
-	keyInfo[4][5] = "laminar/B738/button/fmc1_I";	// sw-36
-	keyInfo[5][5] = "laminar/B738/button/fmc1_J";	// sw-37
-	keyInfo[6][5] = "laminar/B738/button/fmc1_K";	// sw-38
-	keyInfo[7][5] = "laminar/B738/button/fmc1_L";	// sw-39
-	keyInfo[8][5] = "laminar/B738/button/fmc1_M";	// sw-40
-	keyInfo[1][6] = "laminar/B738/button/fmc1_N";	// sw-41
-	keyInfo[2][6] = "laminar/B738/button/fmc1_O";	// sw-42
-	keyInfo[3][6] = "laminar/B738/button/fmc1_P";	// sw-43
-	keyInfo[4][6] = "laminar/B738/button/fmc1_Q";	// sw-44
-	keyInfo[5][6] = "laminar/B738/button/fmc1_R";	// sw-45
-	keyInfo[6][6] = "laminar/B738/button/fmc1_S";	// sw-46
-	keyInfo[7][6] = "laminar/B738/button/fmc1_T";	// sw-47
-	keyInfo[8][6] = "laminar/B738/button/fmc1_U";	// sw-48
-	keyInfo[1][7] = "laminar/B738/button/fmc1_V";	// sw-49
-	keyInfo[2][7] = "laminar/B738/button/fmc1_W";	// sw-50
-	keyInfo[3][7] = "laminar/B738/button/fmc1_X";	// sw-51
-	keyInfo[4][7] = "laminar/B738/button/fmc1_Y";	// sw-52
-	keyInfo[5][7] = "laminar/B738/button/fmc1_Z";	// sw-53
-	keyInfo[6][7] = "laminar/B738/button/fmc1_SP";	// sw-54
-	keyInfo[7][7] = "laminar/B738/button/fmc1_del";		// sw-55
-	keyInfo[8][7] = "laminar/B738/button/fmc1_slash";	// sw-56
-	keyInfo[1][8] = "laminar/B738/button/fmc1_clr";		// sw-57
-	keyInfo[2][8] = "laminar/B738/button/fmc1_period";	// sw-58
-	keyInfo[3][8] = "laminar/B738/button/fmc1_0";	// sw-59
-	keyInfo[4][8] = "laminar/B738/button/fmc1_minus";	// sw-60
-	keyInfo[5][8] = "laminar/B738/button/fmc1_7"; 	// sw-61
-	keyInfo[6][8] = "laminar/B738/button/fmc1_8";	// sw-62
-	keyInfo[7][8] = "laminar/B738/button/fmc1_9";	// sw-63
-	keyInfo[8][8] = "laminar/B738/button/fmc1_4";	// sw-64
-	keyInfo[1][9] = "laminar/B738/button/fmc1_5";	// sw-65
-	keyInfo[2][9] = "laminar/B738/button/fmc1_6";	// sw-66
-	keyInfo[3][9] = "laminar/B738/button/fmc1_1";	// sw-67
-	keyInfo[4][9] = "laminar/B738/button/fmc1_2";	// sw-68
-	keyInfo[5][9] = "laminar/B738/button/fmc1_3";	// sw-69
+	keyInfo[1][1] = "laminar/B738/button/fmc" + side + "_1L";	// sw-1
+	keyInfo[2][1] = "laminar/B738/button/fmc" + side + "_2L";	// sw-2
+	keyInfo[3][1] = "laminar/B738/button/fmc" + side + "_3L"; // sw-3
+	keyInfo[4][1] = "laminar/B738/button/fmc" + side + "_4L"; 	// sw-4
+	keyInfo[5][1] = "laminar/B738/button/fmc" + side + "_5L"; 	// sw-5
+	keyInfo[6][1] = "laminar/B738/button/fmc" + side + "_6L"; 	// sw-6
+	keyInfo[7][1] = "laminar/B738/button/fmc" + side + "_1R"; 	// sw-7
+	keyInfo[8][1] = "laminar/B738/button/fmc" + side + "_2R"; 	// sw-8
+	keyInfo[1][2] = "laminar/B738/button/fmc" + side + "_3R"; 	// sw-9
+	keyInfo[2][2] = "laminar/B738/button/fmc" + side + "_4R";	// sw-10
+	keyInfo[3][2] = "laminar/B738/button/fmc" + side + "_5R"; 	// sw-11
+	keyInfo[4][2] = "laminar/B738/button/fmc" + side + "_6R"; 	// sw-12
+	keyInfo[5][2] = "laminar/B738/button/fmc" + side + "_init_ref"; 	// sw-13
+	keyInfo[6][2] = "laminar/B738/button/fmc" + side + "_rte";	// sw-14
+	keyInfo[7][2] = "laminar/B738/button/fmc" + side + "_clb"; 	// sw-15
+	keyInfo[8][2] = "laminar/B738/button/fmc" + side + "_crz";	// sw-16
+	keyInfo[1][3] = "laminar/B738/button/fmc" + side + "_des";	// sw-17
+	keyInfo[2][3] = "laminar/B738/button/fmc" + side + "_menu";	// sw-18
+	keyInfo[3][3] = "laminar/B738/button/fmc" + side + "_legs"; // sw-19
+	keyInfo[4][3] = "laminar/B738/button/fmc" + side + "_dep_app";	// sw-20
+	keyInfo[5][3] = "laminar/B738/button/fmc" + side + "_hold";	// sw-21
+	keyInfo[6][3] = "laminar/B738/button/fmc" + side + "_prog";	// sw-22
+	keyInfo[7][3] = "laminar/B738/button/fmc" + side + "_exec";	// sw-23
+	keyInfo[8][3] = "laminar/B738/button/fmc" + side + "_n1_lim"; // sw-24
+	keyInfo[1][4] = "laminar/B738/button/fmc" + side + "_fix";	// sw-25
+	keyInfo[2][4] = "laminar/B738/button/fmc" + side + "_prev_page";	// sw-26
+	keyInfo[3][4] = "laminar/B738/button/fmc" + side + "_next_page"; // sw-27
+	keyInfo[4][4] = "laminar/B738/button/fmc" + side + "_A";	// sw-28
+	keyInfo[5][4] = "laminar/B738/button/fmc" + side + "_B";	// sw-29
+	keyInfo[6][4] = "laminar/B738/button/fmc" + side + "_C";	// sw-30
+	keyInfo[7][4] = "laminar/B738/button/fmc" + side + "_D";	// sw-31
+	keyInfo[8][4] = "laminar/B738/button/fmc" + side + "_E";	// sw32
+	keyInfo[1][5] = "laminar/B738/button/fmc" + side + "_F";	// sw-33
+	keyInfo[2][5] = "laminar/B738/button/fmc" + side + "_G";	// sw-34
+	keyInfo[3][5] = "laminar/B738/button/fmc" + side + "_H";	// sw-35
+	keyInfo[4][5] = "laminar/B738/button/fmc" + side + "_I";	// sw-36
+	keyInfo[5][5] = "laminar/B738/button/fmc" + side + "_J";	// sw-37
+	keyInfo[6][5] = "laminar/B738/button/fmc" + side + "_K";	// sw-38
+	keyInfo[7][5] = "laminar/B738/button/fmc" + side + "_L";	// sw-39
+	keyInfo[8][5] = "laminar/B738/button/fmc" + side + "_M";	// sw-40
+	keyInfo[1][6] = "laminar/B738/button/fmc" + side + "_N";	// sw-41
+	keyInfo[2][6] = "laminar/B738/button/fmc" + side + "_O";	// sw-42
+	keyInfo[3][6] = "laminar/B738/button/fmc" + side + "_P";	// sw-43
+	keyInfo[4][6] = "laminar/B738/button/fmc" + side + "_Q";	// sw-44
+	keyInfo[5][6] = "laminar/B738/button/fmc" + side + "_R";	// sw-45
+	keyInfo[6][6] = "laminar/B738/button/fmc" + side + "_S";	// sw-46
+	keyInfo[7][6] = "laminar/B738/button/fmc" + side + "_T";	// sw-47
+	keyInfo[8][6] = "laminar/B738/button/fmc" + side + "_U";	// sw-48
+	keyInfo[1][7] = "laminar/B738/button/fmc" + side + "_V";	// sw-49
+	keyInfo[2][7] = "laminar/B738/button/fmc" + side + "_W";	// sw-50
+	keyInfo[3][7] = "laminar/B738/button/fmc" + side + "_X";	// sw-51
+	keyInfo[4][7] = "laminar/B738/button/fmc" + side + "_Y";	// sw-52
+	keyInfo[5][7] = "laminar/B738/button/fmc" + side + "_Z";	// sw-53
+	keyInfo[6][7] = "laminar/B738/button/fmc" + side + "_SP";	// sw-54
+	keyInfo[7][7] = "laminar/B738/button/fmc" + side + "_del";		// sw-55
+	keyInfo[8][7] = "laminar/B738/button/fmc" + side + "_slash";	// sw-56
+	keyInfo[1][8] = "laminar/B738/button/fmc" + side + "_clr";		// sw-57
+	keyInfo[2][8] = "laminar/B738/button/fmc" + side + "_period";	// sw-58
+	keyInfo[3][8] = "laminar/B738/button/fmc" + side + "_0";	// sw-59
+	keyInfo[4][8] = "laminar/B738/button/fmc" + side + "_minus";	// sw-60
+	keyInfo[5][8] = "laminar/B738/button/fmc" + side + "_7"; 	// sw-61
+	keyInfo[6][8] = "laminar/B738/button/fmc" + side + "_8";	// sw-62
+	keyInfo[7][8] = "laminar/B738/button/fmc" + side + "_9";	// sw-63
+	keyInfo[8][8] = "laminar/B738/button/fmc" + side + "_4";	// sw-64
+	keyInfo[1][9] = "laminar/B738/button/fmc" + side + "_5";	// sw-65
+	keyInfo[2][9] = "laminar/B738/button/fmc" + side + "_6";	// sw-66
+	keyInfo[3][9] = "laminar/B738/button/fmc" + side + "_1";	// sw-67
+	keyInfo[4][9] = "laminar/B738/button/fmc" + side + "_2";	// sw-68
+	keyInfo[5][9] = "laminar/B738/button/fmc" + side + "_3";	// sw-69
 
 	xplaneUDPClient = NULL;
 
@@ -117,7 +119,7 @@ ZiboFMC::~ZiboFMC() {
 
 std::string ZiboFMC::getName() {
 
-	return "ZIBO";
+	return side == "1" ? "ZIB0" : "ZIB1";
 }
 
 void ZiboFMC::init() {
@@ -142,10 +144,21 @@ void ZiboFMC::initSetHost (std::string host, int port) {
 
 	);
 
-	xplaneUDPClient->subscribeDataRef("laminar/B738/fmc1/Line_entry[0][23]", 3);
+	xplaneUDPClient->subscribeDataRef("laminar/B738/fmc" + side + "/Line_entry[0][23]", 3);
 
 }
 
+
+void ZiboFMC::subscribe (std::string dataref) {
+
+	FMCManager::getInstance()->subscribeDataRef (dataref);
+	//xplaneUDPClient->subscribeDataRef(dataref+"[0][23]", 3);
+}
+
+void ZiboFMC::unsubscribe(std::string dataref) {
+
+	FMCManager::getInstance()->unsubscribeDataRef(dataref);
+}
 
 void ZiboFMC::subscribeDataRefs() {
 
@@ -155,96 +168,105 @@ void ZiboFMC::subscribeDataRefs() {
 	// X = Small Lines (maps to odd line numbers)
 	// S = small font on Large Lines
 
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line00_L", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line00_S", 1);
+	subscribe("laminar/B738/fmc" + side + "/Line00_L");
+	subscribe("laminar/B738/fmc" + side + "/Line00_S");
 
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_X", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_X", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_X", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_X", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_X", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_X", 1);
+	subscribe("laminar/B738/fmc" + side + "/Line01_X");
+	subscribe("laminar/B738/fmc" + side + "/Line02_X");
+	subscribe("laminar/B738/fmc" + side + "/Line03_X");
+	subscribe("laminar/B738/fmc" + side + "/Line04_X");
+	subscribe("laminar/B738/fmc" + side + "/Line05_X");
+	subscribe("laminar/B738/fmc" + side + "/Line06_X");
 
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_L", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_L", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_L", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_L", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_L", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_L", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_I", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_I", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_I", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_I", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_I", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_I", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_S", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_S", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_S", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_S", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_S", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_S", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_G", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_G", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_G", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_G", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_G", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_G", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line01_M", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line02_M", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line03_M", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line04_M", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line05_M", 1);
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/fmc1/Line06_M", 1);
+	subscribe("laminar/B738/fmc" + side + "/Line01_L");
+	subscribe("laminar/B738/fmc" + side + "/Line02_L");
+	subscribe("laminar/B738/fmc" + side + "/Line03_L");
+	subscribe("laminar/B738/fmc" + side + "/Line04_L");
+	subscribe("laminar/B738/fmc" + side + "/Line05_L");
+	subscribe("laminar/B738/fmc" + side + "/Line06_L");
+	subscribe("laminar/B738/fmc" + side + "/Line01_I");
+	subscribe("laminar/B738/fmc" + side + "/Line02_I");
+	subscribe("laminar/B738/fmc" + side + "/Line03_I");
+	subscribe("laminar/B738/fmc" + side + "/Line04_I");
+	subscribe("laminar/B738/fmc" + side + "/Line05_I");
+	subscribe("laminar/B738/fmc" + side + "/Line06_I");
+	subscribe("laminar/B738/fmc" + side + "/Line01_S");
+	subscribe("laminar/B738/fmc" + side + "/Line02_S");
+	subscribe("laminar/B738/fmc" + side + "/Line03_S");
+	subscribe("laminar/B738/fmc" + side + "/Line04_S");
+	subscribe("laminar/B738/fmc" + side + "/Line05_S");
+	subscribe("laminar/B738/fmc" + side + "/Line06_S");
+	subscribe("laminar/B738/fmc" + side + "/Line01_G");
+	subscribe("laminar/B738/fmc" + side + "/Line02_G");
+	subscribe("laminar/B738/fmc" + side + "/Line03_G");
+	subscribe("laminar/B738/fmc" + side + "/Line04_G");
+	subscribe("laminar/B738/fmc" + side + "/Line05_G");
+	subscribe("laminar/B738/fmc" + side + "/Line06_G");
+	subscribe("laminar/B738/fmc" + side + "/Line01_M");
+	subscribe("laminar/B738/fmc" + side + "/Line02_M");
+	subscribe("laminar/B738/fmc" + side + "/Line03_M");
+	subscribe("laminar/B738/fmc" + side + "/Line04_M");
+	subscribe("laminar/B738/fmc" + side + "/Line05_M");
+	subscribe("laminar/B738/fmc" + side + "/Line06_M");
 
-	FMCManager::getInstance()->subscribeDataRef("laminar/B738/indicators/fmc_exec_lights", 1);
+	if (side=="0") {
+		subscribe("laminar/B738/indicators/fmc_exec_lights");
+	} else {
+		subscribe("laminar/B738/indicators/fmc_exec_lights_fo");
+	}
 
 }
 
 
 void ZiboFMC::deInit () {
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line00_L");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line00_S");
 
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_X");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_X");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_X");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_X");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_X");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_X");
 
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_L");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_L");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_L");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_L");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_L");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_L");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_I");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_I");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_I");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_I");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_I");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_I");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_S");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_S");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_S");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_S");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_S");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_S");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_G");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_G");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_G");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_G");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_G");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_G");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line01_M");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line02_M");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line03_M");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line04_M");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line05_M");
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/fmc1/Line06_M");
+	unsubscribe("laminar/B738/fmc" + side + "/Line00_L");
+	unsubscribe("laminar/B738/fmc" + side + "/Line00_S");
 
-	FMCManager::getInstance()->unsubscribeDataRef("laminar/B738/indicators/fmc_exec_lights");
+	unsubscribe("laminar/B738/fmc" + side + "/Line01_X");
+	unsubscribe("laminar/B738/fmc" + side + "/Line02_X");
+	unsubscribe("laminar/B738/fmc" + side + "/Line03_X");
+	unsubscribe("laminar/B738/fmc" + side + "/Line04_X");
+	unsubscribe("laminar/B738/fmc" + side + "/Line05_X");
+	unsubscribe("laminar/B738/fmc" + side + "/Line06_X");
 
+	unsubscribe("laminar/B738/fmc" + side + "/Line01_L");
+	unsubscribe("laminar/B738/fmc" + side + "/Line02_L");
+	unsubscribe("laminar/B738/fmc" + side + "/Line03_L");
+	unsubscribe("laminar/B738/fmc" + side + "/Line04_L");
+	unsubscribe("laminar/B738/fmc" + side + "/Line05_L");
+	unsubscribe("laminar/B738/fmc" + side + "/Line06_L");
+	unsubscribe("laminar/B738/fmc" + side + "/Line01_I");
+	unsubscribe("laminar/B738/fmc" + side + "/Line02_I");
+	unsubscribe("laminar/B738/fmc" + side + "/Line03_I");
+	unsubscribe("laminar/B738/fmc" + side + "/Line04_I");
+	unsubscribe("laminar/B738/fmc" + side + "/Line05_I");
+	unsubscribe("laminar/B738/fmc" + side + "/Line06_I");
+	unsubscribe("laminar/B738/fmc" + side + "/Line01_S");
+	unsubscribe("laminar/B738/fmc" + side + "/Line02_S");
+	unsubscribe("laminar/B738/fmc" + side + "/Line03_S");
+	unsubscribe("laminar/B738/fmc" + side + "/Line04_S");
+	unsubscribe("laminar/B738/fmc" + side + "/Line05_S");
+	unsubscribe("laminar/B738/fmc" + side + "/Line06_S");
+	unsubscribe("laminar/B738/fmc" + side + "/Line01_G");
+	unsubscribe("laminar/B738/fmc" + side + "/Line02_G");
+	unsubscribe("laminar/B738/fmc" + side + "/Line03_G");
+	unsubscribe("laminar/B738/fmc" + side + "/Line04_G");
+	unsubscribe("laminar/B738/fmc" + side + "/Line05_G");
+	unsubscribe("laminar/B738/fmc" + side + "/Line06_G");
+	unsubscribe("laminar/B738/fmc" + side + "/Line01_M");
+	unsubscribe("laminar/B738/fmc" + side + "/Line02_M");
+	unsubscribe("laminar/B738/fmc" + side + "/Line03_M");
+	unsubscribe("laminar/B738/fmc" + side + "/Line04_M");
+	unsubscribe("laminar/B738/fmc" + side + "/Line05_M");
+	unsubscribe("laminar/B738/fmc" + side + "/Line06_M");
+
+	if (side=="0") {
+		unsubscribe("laminar/B738/indicators/fmc_exec_lights");
+	} else {
+		unsubscribe("laminar/B738/indicators/fmc_exec_lights_fo");
+	}
 	if (xplaneUDPClient != NULL) {
 		delete xplaneUDPClient;
 		xplaneUDPClient = NULL;
@@ -282,10 +304,11 @@ void ZiboFMC::receiveDataRef(std::string type, std::string dataref,
 
 	ostringstream buf;
 	buf << "ZiboFMC got [" << dataref << "|" << value << "]" << endl;
+	cerr << buf.str() << endl;
 	syslog (LOG_INFO, "%s", buf.str().c_str());
 
 
-	regex r("^laminar/B738/fmc1/Line(\\d+)_(.)$");
+	regex r("^laminar/B738/fmc" + side + "/Line(\\d+)_(.)$");
 	smatch m;
 	if (regex_match(dataref, m, r)) {
 
@@ -344,13 +367,13 @@ void ZiboFMC::receiveDataRef(std::string type, std::string dataref,
 
 	}
 
-	else if (dataref == "laminar/B738/fmc1/Line_entry") {
+	else if (dataref == "laminar/B738/fmc" + side + "/Line_entry") {
 		Screen::getInstance()->drawLine (0, 13, value);
 		cerr << "Line_entry [" << value << "]" << endl;
 
 	}
 
-	else if (dataref == "laminar/B738/indicators/fmc_exec_lights") {
+	else if (dataref == "laminar/B738/indicators/fmc_exec_lights" || dataref == "laminar/B738/indicators/fmc_exec_lights_fo") {
 		LEDs::getInstance()->setLED(LEDs::LED_EXEC, value != "0");
 	}
 
@@ -363,14 +386,20 @@ void ZiboFMC::receiveUDPDataRefFloat (std::string dataref, float value) {
 
 void ZiboFMC::receiveUDPDataRefString (std::string dataref, std::string value) {
 
-	syslog (LOG_INFO, "ZIBO UDP STR [%s] [%s]", dataref.c_str(), value.c_str());
+	cerr << "ZIBO UDP STR [" << dataref << "] [" << value << "]" << endl;
 
 	// pad the value to 24 columns
 	if (value.size() < 24) {
 		value.insert (value.end(), 24-value.size(), ' ');
 	}
 
-	receiveDataRef ("ub", "laminar/B738/fmc1/Line_entry", value);
+	// strip the indices out of the dataref
+	std::size_t indpos = dataref.find_first_of('[');
+	if (indpos != string::npos) {
+		dataref.erase (indpos);
+	}
+
+	receiveDataRef ("ub", dataref, value);
 
 }
 

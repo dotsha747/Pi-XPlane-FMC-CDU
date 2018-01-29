@@ -47,4 +47,4 @@ USAGE
 
   - The main application is started by executing "piXPlaneFMCCDU".
 	
-	- Read the Installation Guide to have the software start automatically when the Pi is powered on.
+  - Read the Installation Guide to have the software start automatically when the Pi is powered on.

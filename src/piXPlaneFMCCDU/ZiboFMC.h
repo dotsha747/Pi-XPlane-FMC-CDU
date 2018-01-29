@@ -33,11 +33,12 @@
 class ZiboFMC: public AbstractFMC {
 protected:
 
+	std::string side; // 0 = pilot, 1=first officer
 	std::map<int, std::map<int, std::string>> keyInfo;
 
 	XPlaneUDPClient * xplaneUDPClient;
 public:
-	ZiboFMC();
+	ZiboFMC(bool isCaptain);
 	virtual ~ZiboFMC();
 
 	virtual std::string getName();
@@ -46,6 +47,9 @@ public:
 	virtual void deInit();
 
 	virtual void subscribeDataRefs();
+
+	virtual void subscribe(std::string dataref);
+	virtual void unsubscribe (std::string dataref);
 
 	virtual void keyPressEvent(int, int);
 	virtual void keyReleaseEvent(int, int);
