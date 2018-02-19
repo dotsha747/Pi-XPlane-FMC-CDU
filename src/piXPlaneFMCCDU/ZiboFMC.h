@@ -36,7 +36,6 @@ protected:
 	std::string side; // 0 = pilot, 1=first officer
 	std::map<int, std::map<int, std::string>> keyInfo;
 
-	XPlaneUDPClient * xplaneUDPClient;
 public:
 	ZiboFMC(bool isCaptain);
 	virtual ~ZiboFMC();
@@ -54,12 +53,9 @@ public:
 	virtual void keyPressEvent(int, int);
 	virtual void keyReleaseEvent(int, int);
 
-	virtual std::string mixLargeSmallLines(std::string large,
-			std::string small);
+
 	virtual void receiveDataRef(std::string, std::string dataref, std::string value);
 
-	virtual void receiveUDPDataRefString (std::string dataref, std::string value);
-	virtual void receiveUDPDataRefFloat (std::string dataref, float value);
 
 
 };

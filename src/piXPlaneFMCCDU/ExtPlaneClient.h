@@ -1,8 +1,8 @@
 /*
- This file is part of Pi-XPlane-FMC-CDU
- A Raspberry Pi-based External FMC for XPlane
+ This file is part of TestRotaryEncoder
+ A Raspberry Pi-based Demo of a dual-rotary encoder and X-Plane
 
- Copyright (C) 2017-2018 shahada abubakar
+ Copyright (C) 2018 shahada abubakar
  <shahada@abubakar.net>
 
  This program is free software: you can redistribute it and/or modify

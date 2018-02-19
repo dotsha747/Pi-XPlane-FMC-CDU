@@ -109,8 +109,6 @@ ZiboFMC::ZiboFMC(bool isCaptain) {
 	keyInfo[4][9] = "laminar/B738/button/fmc" + side + "_2";	// sw-68
 	keyInfo[5][9] = "laminar/B738/button/fmc" + side + "_3";	// sw-69
 
-	xplaneUDPClient = NULL;
-
 }
 
 ZiboFMC::~ZiboFMC() {
@@ -136,15 +134,6 @@ void ZiboFMC::init() {
  */
 
 void ZiboFMC::initSetHost (std::string host, int port) {
-
-	xplaneUDPClient = new XPlaneUDPClient (
-			host, 49000,
-		std::bind (&ZiboFMC::receiveUDPDataRefFloat, this, std::placeholders::_1, std::placeholders::_2),
-		std::bind (&ZiboFMC::receiveUDPDataRefString, this, std::placeholders::_1, std::placeholders::_2)
-
-	);
-
-	xplaneUDPClient->subscribeDataRef("laminar/B738/fmc" + side + "/Line_entry[0][23]", 3);
 
 }
 
@@ -184,30 +173,35 @@ void ZiboFMC::subscribeDataRefs() {
 	subscribe("laminar/B738/fmc" + side + "/Line04_L");
 	subscribe("laminar/B738/fmc" + side + "/Line05_L");
 	subscribe("laminar/B738/fmc" + side + "/Line06_L");
+
 	subscribe("laminar/B738/fmc" + side + "/Line01_I");
 	subscribe("laminar/B738/fmc" + side + "/Line02_I");
 	subscribe("laminar/B738/fmc" + side + "/Line03_I");
 	subscribe("laminar/B738/fmc" + side + "/Line04_I");
 	subscribe("laminar/B738/fmc" + side + "/Line05_I");
 	subscribe("laminar/B738/fmc" + side + "/Line06_I");
+
 	subscribe("laminar/B738/fmc" + side + "/Line01_S");
 	subscribe("laminar/B738/fmc" + side + "/Line02_S");
 	subscribe("laminar/B738/fmc" + side + "/Line03_S");
 	subscribe("laminar/B738/fmc" + side + "/Line04_S");
 	subscribe("laminar/B738/fmc" + side + "/Line05_S");
 	subscribe("laminar/B738/fmc" + side + "/Line06_S");
+
 	subscribe("laminar/B738/fmc" + side + "/Line01_G");
 	subscribe("laminar/B738/fmc" + side + "/Line02_G");
 	subscribe("laminar/B738/fmc" + side + "/Line03_G");
 	subscribe("laminar/B738/fmc" + side + "/Line04_G");
 	subscribe("laminar/B738/fmc" + side + "/Line05_G");
 	subscribe("laminar/B738/fmc" + side + "/Line06_G");
+
 	subscribe("laminar/B738/fmc" + side + "/Line01_M");
 	subscribe("laminar/B738/fmc" + side + "/Line02_M");
 	subscribe("laminar/B738/fmc" + side + "/Line03_M");
 	subscribe("laminar/B738/fmc" + side + "/Line04_M");
 	subscribe("laminar/B738/fmc" + side + "/Line05_M");
 	subscribe("laminar/B738/fmc" + side + "/Line06_M");
+	subscribe("laminar/B738/fmc" + side + "/Line_entry");
 
 	if (side=="0") {
 		subscribe("laminar/B738/indicators/fmc_exec_lights");
@@ -267,10 +261,7 @@ void ZiboFMC::deInit () {
 	} else {
 		unsubscribe("laminar/B738/indicators/fmc_exec_lights_fo");
 	}
-	if (xplaneUDPClient != NULL) {
-		delete xplaneUDPClient;
-		xplaneUDPClient = NULL;
-	}
+
 
 }
 
@@ -368,6 +359,7 @@ void ZiboFMC::receiveDataRef(std::string type, std::string dataref,
 	}
 
 	else if (dataref == "laminar/B738/fmc" + side + "/Line_entry") {
+		value.resize(24, ' ');
 		Screen::getInstance()->drawLine (0, 13, value);
 		cerr << "Line_entry [" << value << "]" << endl;
 
@@ -379,64 +371,3 @@ void ZiboFMC::receiveDataRef(std::string type, std::string dataref,
 
 }
 
-
-void ZiboFMC::receiveUDPDataRefFloat (std::string dataref, float value) {
-
-}
-
-void ZiboFMC::receiveUDPDataRefString (std::string dataref, std::string value) {
-
-	cerr << "ZIBO UDP STR [" << dataref << "] [" << value << "]" << endl;
-
-	// pad the value to 24 columns
-	if (value.size() < 24) {
-		value.insert (value.end(), 24-value.size(), ' ');
-	}
-
-	// strip the indices out of the dataref
-	std::size_t indpos = dataref.find_first_of('[');
-	if (indpos != string::npos) {
-		dataref.erase (indpos);
-	}
-
-	receiveDataRef ("ub", dataref, value);
-
-}
-
-
-
-
-
-/** @brief Format lines that have large and small text.
- *
- * 	Zibo handles lines with mixed sizes in a weird way, they are stored in
- * 	separate datarefs, those ending with L (for the normal large fonts) and
- * 	those ending with S (for the smallfonts). Normally where only large fonts
- * 	appear, only L datarefs are transmitted. If a line contains mixed fonts,
- * 	we will receive and L dataref followed by an S dataref. Assumption: we
- * 	will never get an S without first receiving an L.
- *
- *
- */
-
-std::string ZiboFMC::mixLargeSmallLines(std::string large, std::string small) {
-
-	ostringstream buf;
-
-	for (unsigned int i = 0; i < small.length(); i++) {
-
-		if (small[i] == ' ') {
-			// nothing from small, so take from big
-			buf << large[i];
-		} else {
-			// something in small, so take from here. No one said we can't
-			// wrap each character 8-)
-			buf << "{" << small[i] << "}";
-		}
-	}
-
-	// cerr << "Mixing [" << large << "] with [" << small << "] and got [" << buf.str() << "]" << endl;
-
-	return buf.str();
-
-}
