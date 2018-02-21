@@ -42,7 +42,6 @@ public:
 
 	virtual std::string getName();
 	virtual void init();
-	virtual void initSetHost (std::string host, int port);
 	virtual void deInit();
 
 	virtual void subscribeDataRefs();

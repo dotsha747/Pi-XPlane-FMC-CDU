@@ -34,7 +34,7 @@
 #include "SplashFMC.h"
 #include "MainFMC.h"
 
-#include "ExtPlaneClient.h"
+#include <XPlaneExtPlaneClient/ExtPlaneClient.h>
 
 /** @brief Manages "current" screen by channelling data and keypresses to a FMC Handler
  *
@@ -64,9 +64,6 @@ private:
 	// actual FMCS go here
 	std::map<std::string, AbstractFMC *> actualFMCs;
 
-	// hack to keep the last host for initHost()
-	std::string hackHost;
-	int hackPort;
 
 protected:
 	static FMCManager * instance;
@@ -93,7 +90,7 @@ protected:
 	/** @brief our "connection" to the server
 	 *
 	 */
-	ExtPlaneClient * xplaneConnection;
+	XPlaneExtPlaneClient::ExtPlaneClient * xplaneConnection;
 
 	/** track time when CLR was pressed.
 	 * 	Used to trigger going to Select screen if held

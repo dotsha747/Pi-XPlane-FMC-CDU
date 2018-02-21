@@ -58,9 +58,6 @@ FMCManager::FMCManager() {
 	actualFMCs.insert(pair<std::string, AbstractFMC *> ("X737", new X737FMC()));
 	actualFMCs.insert(pair<std::string, AbstractFMC *> ("XFMC", new XfmcFMC()));
 
-	hackHost = "";
-	hackPort = 0;
-
 
 }
 
@@ -80,7 +77,6 @@ void FMCManager::setCurrentFMC(AbstractFMC * fmc) {
 	currentFMC = fmc;
 
 	currentFMC->init();
-	currentFMC->initSetHost(hackHost, hackPort);
 
 }
 
@@ -154,14 +150,11 @@ void FMCManager::connectToServer(std::string host, int port) {
 	}
 	currentConnection = buf.str();
 	syslog (LOG_INFO, "Connecting to %s", currentConnection.c_str());
-	xplaneConnection = new ExtPlaneClient (host, port,
+	xplaneConnection = new XPlaneExtPlaneClient::ExtPlaneClient (host, port,
 			std::bind (&FMCManager::onExtPlaneConnect, this),
 			std::bind (&FMCManager::onExtPlaneDisconnect, this),
 			std::bind (&FMCManager::receiveDataFromServer, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)
 	);
-
-	hackHost = host;
-	hackPort = port;
 
 }
 

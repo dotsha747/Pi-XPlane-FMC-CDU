@@ -39,7 +39,7 @@ TESTFMCLEDEXE=testFMCLED
 
 MAINSRCS=$(wildcard src/piXPlaneFMCCDU/*.cpp)
 MAINOBJS=$(patsubst %.cpp, %.o, $(MAINSRCS))
-MAINLIBS=pthread SDL2 SDL2_ttf freetype z png pthread XPlaneUDPClient wiringPi  
+MAINLIBS=pthread SDL2 SDL2_ttf freetype z png pthread XPlaneUDPClient wiringPi XPlaneExtPlaneClient 
 #bcm_host vchiq_arm vcos
 MAINLDOPTS=-L /opt/vc/lib
 MAINEXE=piXPlaneFMCCDU

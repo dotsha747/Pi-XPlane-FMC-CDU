@@ -46,14 +46,6 @@ public:
 
 	virtual void init () =0;
 
-	/** @brief pass the current host to the fmc.
-	 *
-	 * 	This is to support a hack for zibo. It's called immediately
-	 * 	after init().
-	 */
-
-	virtual void initSetHost (std::string host, int port) {};
-
 	/** @brief de-initialize the fmc.
 	 *
 	 * This gets called whenever an FMC is to be removed from the "current"

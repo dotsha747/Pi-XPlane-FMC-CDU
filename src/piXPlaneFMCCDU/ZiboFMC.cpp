@@ -25,8 +25,6 @@
 #include <sstream>
 #include <algorithm>
 
-#include "Base64.h"
-
 #include "ZiboFMC.h"
 #include "Screen.h"
 #include "FMCManager.h"
@@ -128,14 +126,6 @@ void ZiboFMC::init() {
 	subscribeDataRefs();
 }
 
-
-/** @brief hack to workaround a extplane/zibo bug
- *
- */
-
-void ZiboFMC::initSetHost (std::string host, int port) {
-
-}
 
 
 void ZiboFMC::subscribe (std::string dataref) {
@@ -321,20 +311,17 @@ void ZiboFMC::receiveDataRef(std::string type, std::string dataref,
 
 		// normal large lines
 		if (size == "L") {
-
-			// new page
-			if (line == 0) {
-				Screen::getInstance()->clearScreen();
-			}
-
 			line = (line) * 2;
+			// zibo sends " " when it means clear the entire line
+			value.resize(24, ' ');
 			Screen::getInstance()->drawLine(0, line, value);
-
 		}
 
 		// normal small lines
 		else if (size == "X") {
 			line = 1 + ((line - 1) * 2);
+			// zibo sends " " when it means clear the entire line
+			value.resize(24, ' ');
 			Screen::getInstance()->drawLine(0, line, value);
 		}
 
