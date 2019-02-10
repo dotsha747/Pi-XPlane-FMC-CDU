@@ -336,19 +336,23 @@ void Screen::doInit(SDL_Event * event) {
 		// location in raspbian first, falling back to the Ubuntu location.
 		struct stat buffer;
 		string fontPath;
-		fontPath = "NimbusSanL-Regu.ttf";
+		fontPath = "/usr/local/fonts/consola.ttf";
 		if (stat(fontPath.c_str(), &buffer) != 0) {
-			fontPath =
-					"/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf";
+			fontPath = "NimbusSanL-Regu.ttf";
 			if (stat(fontPath.c_str(), &buffer) != 0) {
 				fontPath =
-						"/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf";
+						"/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf";
 				if (stat(fontPath.c_str(), &buffer) != 0) {
-					throw runtime_error(
-							"Unable to find font LiberationSans-Regular.ttf");
+					fontPath =
+							"/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf";
+					if (stat(fontPath.c_str(), &buffer) != 0) {
+						throw runtime_error(
+								"Unable to find font LiberationSans-Regular.ttf");
+					}
 				}
 			}
 		}
+		syslog (LOG_INFO, "using font \"%s\"", fontPath.c_str());
 
 		// generate font textures
 		if (tallChars != NULL) {
