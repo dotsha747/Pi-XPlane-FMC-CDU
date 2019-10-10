@@ -120,6 +120,13 @@ protected:
 	/** @brief a texture holding pre-generated short characters */
 	SDL_Texture * shortChars = NULL;
 
+        /** @brief a texture holding pre-generated tall characters */
+        SDL_Texture * tallChars_Inv = NULL;
+
+        /** @brief a texture holding pre-generated short characters */
+        SDL_Texture * shortChars_Inv = NULL;
+
+
 	/** @brief ready-composited complete screen texture */
 	SDL_Texture * screenBufferTexture = NULL;
 
@@ -199,7 +206,7 @@ protected:
 	void transferBufferToDisplay ();
 
 	/** @brief generate the texture containing all characters for a given cell width and height */
-	SDL_Texture * generateCharacterTexture (std::string fontPath, int cellWidth, int maxHeight, SDL_Renderer * renderer);
+	SDL_Texture * generateCharacterTexture (std::string fontPath, int cellWidth, int maxHeight, SDL_Renderer * renderer, int);
 
 
 	/** @brief generate a font that fits within a cell's width and height */

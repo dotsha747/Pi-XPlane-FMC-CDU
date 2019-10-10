@@ -148,7 +148,10 @@ void ZiboFMC::subscribeDataRefs() {
 	// S = small font on Large Lines
 
 	subscribe("laminar/B738/fmc" + side + "/Line00_L");
-	subscribe("laminar/B738/fmc" + side + "/Line00_S");
+	subscribe("laminar/B738/fmc" + side + "/Line00_I");
+        subscribe("laminar/B738/fmc" + side + "/Line00_S");
+        subscribe("laminar/B738/fmc" + side + "/Line00_G");
+        subscribe("laminar/B738/fmc" + side + "/Line00_M");
 
 	subscribe("laminar/B738/fmc" + side + "/Line01_X");
 	subscribe("laminar/B738/fmc" + side + "/Line02_X");
@@ -206,7 +209,10 @@ void ZiboFMC::deInit () {
 
 
 	unsubscribe("laminar/B738/fmc" + side + "/Line00_L");
-	unsubscribe("laminar/B738/fmc" + side + "/Line00_S");
+	unsubscribe("laminar/B738/fmc" + side + "/Line00_I");
+        unsubscribe("laminar/B738/fmc" + side + "/Line00_S");
+        unsubscribe("laminar/B738/fmc" + side + "/Line00_G");
+        unsubscribe("laminar/B738/fmc" + side + "/Line00_M");
 
 	unsubscribe("laminar/B738/fmc" + side + "/Line01_X");
 	unsubscribe("laminar/B738/fmc" + side + "/Line02_X");
@@ -342,7 +348,11 @@ void ZiboFMC::receiveDataRef(std::string type, std::string dataref,
 			line = (line) * 2;
 			Screen::getInstance()->drawLine(0, line, value, false, 'G');
 		}
-
+                // overlay green font in large line
+                else if (size == "I") {
+                        line = (line) * 2;
+                        Screen::getInstance()->drawLine(0, line, value, false, 'I');
+                }
 	}
 
 	else if (dataref == "laminar/B738/fmc" + side + "/Line_entry") {
