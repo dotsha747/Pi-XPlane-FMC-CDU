@@ -36,7 +36,8 @@ enum LedTypes
 	LED_MSG = 14, 	// p.3 bcm.11
 	LED_DSPY = 21,	// p.29 bcm.5
 	LED_OFST = 22, 	// p.31 bcm.6
-	LED_FAIL = 23	// p.33 bcm.13
+	LED_FAIL = 23,	// p.33 bcm.13
+	LED_BACK = 24   
 };
 
 int main(int argc, char * argv[]) {
@@ -65,11 +66,27 @@ int main(int argc, char * argv[]) {
 	} else if (strcmp(argv[1], "fail") == 0) {
 		pinMode(LED_FAIL, OUTPUT);
 		digitalWrite(LED_FAIL, state);
-	} else if (strcmp(argv[1], "ofset") == 0) {
+	} else if (strcmp(argv[1], "ofst") == 0) {
 		pinMode(LED_OFST, OUTPUT);
 		digitalWrite(LED_OFST, state);
 	} else if (strcmp(argv[1], "msg") == 0) {
 		pinMode(LED_MSG, OUTPUT);
 		digitalWrite(LED_MSG, state);
+	} else if (strcmp(argv[1], "back") == 0) {
+		pinMode(LED_BACK, OUTPUT);
+		digitalWrite(LED_BACK, state);
+	} else if (strcmp(argv[1], "all") == 0) {
+		pinMode(LED_DSPY, OUTPUT);
+		pinMode(LED_EXEC, OUTPUT);
+		pinMode(LED_FAIL, OUTPUT);
+		pinMode(LED_OFST, OUTPUT);
+		pinMode(LED_MSG, OUTPUT);
+		pinMode(LED_BACK, OUTPUT);
+		digitalWrite(LED_EXEC, state);
+		digitalWrite(LED_DSPY, state);
+		digitalWrite(LED_FAIL, state);
+		digitalWrite(LED_OFST, state);
+		digitalWrite(LED_MSG, state);
+		digitalWrite(LED_BACK, state);
 	}
 }
