@@ -30,6 +30,7 @@
 
 #include "Screen.h"
 #include "KeypadScanner.h"
+#include "RotaryEncScanner.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -48,6 +49,7 @@ int main(int argc, char * argv[]) {
 	// initialize
 	FMCManager::getInstance();
 	KeypadScanner::getInstance()->launchThread();
+	RotaryEncScanner::getInstance()->launchThread();
 
 	// main SDL loop
 	Screen::getInstance()->mainLoop();
