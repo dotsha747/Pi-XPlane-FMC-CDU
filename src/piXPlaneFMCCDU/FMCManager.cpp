@@ -117,6 +117,7 @@ void FMCManager::tick() {
 		clearKeyPressTime = 0;
 			gotoMainFMC();
 	}
+
 }
 
 
@@ -129,6 +130,9 @@ void FMCManager::XPlaneBeaconListener(XPlaneBeaconListener::XPlaneServer server,
 
 	syslog(LOG_INFO, "Beacon received %s with state %s",
 			server.toString().c_str(), exists ? "online" : "offline");
+
+	cerr << "Server " << server.toString().c_str();
+        mainFMC->keyPressEvent(1,1);
 }
 
 
@@ -179,7 +183,14 @@ void FMCManager::receiveDataFromServer(std::string type, std::string dataref, st
 		}
 
 		setCurrentFMC (mainFMC);
+
+		// AUTO LOAD FMC
 		mainFMC->refreshDisplay();
+		sleep(2);
+		mainFMC->keyPressEvent(7,1);
+		mainFMC->refreshDisplay();
+		sleep(2);
+                mainFMC->keyPressEvent(7,3);
 
 	}
 
@@ -187,6 +198,14 @@ void FMCManager::receiveDataFromServer(std::string type, std::string dataref, st
 		syslog (LOG_INFO, "x737FMC found!");
 		mainFMC->onDetectFMC ("X737", true);
 		mainFMC->refreshDisplay();
+
+                //AUTO LOAD FMC mainFMC->refreshDisplay();
+                sleep(2);
+                mainFMC->keyPressEvent(7,1);
+                mainFMC->refreshDisplay();
+                sleep(2);
+                mainFMC->keyPressEvent(7,3);
+
 	}
 
 	if (type=="ui" && dataref=="xfmc/Status") {

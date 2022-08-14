@@ -247,6 +247,9 @@ void MainFMC::keyPressEvent(int row, int col) {
 
 	}
 
+	syslog(LOG_INFO, "Detected: " + detectedFMCs.size());
+	cerr << "detectedFMCs.size " << (int) detectedFMCs.size();
+
 	refreshDisplay();
 
 }

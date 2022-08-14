@@ -234,12 +234,12 @@ void X737FMC::receiveDataRef(std::string type, std::string dataref,
 			}
 		}
 
-		if (line == 14) {
+		//if (line == 14) {
 			// pad the value to 25 columns
 			if (value.size() < 25) {
 				value.insert(value.end(), 25 - value.size(), ' ');
 			}
-		}
+		//}
 
 		Screen::getInstance()->drawLine(0, line - 1, value);
 	}

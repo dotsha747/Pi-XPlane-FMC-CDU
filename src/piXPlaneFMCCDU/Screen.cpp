@@ -359,13 +359,26 @@ void Screen::doInit(SDL_Event * event) {
 			SDL_DestroyTexture(tallChars);
 		}
 		tallChars = generateCharacterTexture(fontPath, cellWidth,
-				tallCellHeight, renderer);
+				tallCellHeight, renderer, 0);
 
 		if (shortChars != NULL) {
 			SDL_DestroyTexture(shortChars);
 		}
 		shortChars = generateCharacterTexture(fontPath, cellWidth,
-				shortCellHeight, renderer);
+				shortCellHeight, renderer, 0);
+
+                if (tallChars_Inv != NULL) {
+                        SDL_DestroyTexture(tallChars_Inv);
+                }
+                tallChars_Inv = generateCharacterTexture(fontPath, cellWidth,
+                                tallCellHeight, renderer, 1);
+
+                if (shortChars_Inv != NULL) {
+                        SDL_DestroyTexture(shortChars_Inv);
+                }
+                shortChars_Inv = generateCharacterTexture(fontPath, cellWidth,
+                                shortCellHeight, renderer, 1);
+
 
 	} else {
 		syslog(LOG_INFO, "Skipping re-calculating metrics");
@@ -491,13 +504,30 @@ void Screen::doDrawLine(SDL_Event * event) {
 			b=0;
 		}
 
+                if (color == 'I') {
+			//SDL_SetRenderDrawColor(renderer, 180, 0, 0, 255);
+			//SDL_Rect spaceRect = { baseX, baseY, cellWidth, tallCellHeight };
+                        //SDL_SetRenderDrawColor(renderer, 180, 0, 0, 255);
+                        //SDL_RenderFillRect(renderer, &spaceRect);
+                        //r =0;
+                        //b=0;
+			//g=0;
+			if (isTall) {
+                                SDL_SetTextureColorMod (tallChars_Inv, r, g, b);
+                                SDL_RenderCopy(renderer, tallChars_Inv, &srcrect, &dstrect);
+                        } else {
+                                SDL_SetTextureColorMod (tallChars_Inv, r, g, b);
+                                SDL_RenderCopy(renderer, shortChars_Inv, &srcrect, &dstrect);
+                        }
+                }else {
 		// bitblt
-		if (isTall) {
-			SDL_SetTextureColorMod (tallChars, r, g, b);
-			SDL_RenderCopy(renderer, tallChars, &srcrect, &dstrect);
-		} else {
-			SDL_SetTextureColorMod (tallChars, r, g, b);
-			SDL_RenderCopy(renderer, shortChars, &srcrect, &dstrect);
+			if (isTall) {
+				SDL_SetTextureColorMod (tallChars, r, g, b);
+				SDL_RenderCopy(renderer, tallChars, &srcrect, &dstrect);
+			} else {
+				SDL_SetTextureColorMod (tallChars, r, g, b);
+				SDL_RenderCopy(renderer, shortChars, &srcrect, &dstrect);
+			}
 		}
 		col++;
 	}
@@ -514,7 +544,7 @@ void Screen::transferBufferToDisplay() {
 }
 
 SDL_Texture * Screen::generateCharacterTexture(std::string fontPath,
-		int maxWidth, int maxHeight, SDL_Renderer * renderer) {
+		int maxWidth, int maxHeight, SDL_Renderer * renderer, int inverted) {
 
 	// create a big surface to hold all the characters we may ever need,
 	// making it the same pixelformat as the screen.
@@ -550,8 +580,17 @@ SDL_Texture * Screen::generateCharacterTexture(std::string fontPath,
 
 	// get a font of the appropriate size to fit our cell width and height
 	TTF_Font * font = getFont(fontPath, maxWidth, maxHeight, renderer);
-	SDL_Color white = { 255, 255, 255 };
-	SDL_Color black = { 0, 0, 0 };
+
+                SDL_Color white;// = { 255, 255, 255 };
+                SDL_Color black;// = { 0, 0, 0 };
+
+	if (inverted == 1) {
+                white = { 0, 0, 0 };
+                black = { 255, 255, 255 };
+	} else {
+		white = { 255, 255, 255 };
+		black = { 0, 0, 0 };
+	}
 
 	// now let's render printable characters
 	for (char c = 32; c < 96; c++) {
