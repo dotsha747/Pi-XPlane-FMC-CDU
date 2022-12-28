@@ -29,7 +29,12 @@
 #include "FMCManager.h"
 
 #include "Screen.h"
-#include "KeypadScanner.h"
+#include "platform/KeypadScanner.h"
+// #if defined(__x86_64__)
+// #include "KeyboardScanner.h"
+// #else
+// #include "KeypadScanner.h"
+// #endif
 #include "RotaryEncScanner.h"
 
 //Screen dimension constants
