@@ -455,7 +455,7 @@ void Screen::doDrawLine(SDL_Event * event) {
 		// ' ' blanks the cell, depending on spaceErases
 		else if (c == ' ') {
 			if (spaceErases) {
-				SDL_Rect spaceRect = { baseX, baseY, cellWidth, tallCellHeight };
+				SDL_Rect spaceRect = { baseX, baseY, cellWidth, cellHeight };
 				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 				SDL_RenderFillRect(renderer, &spaceRect);
 			};
