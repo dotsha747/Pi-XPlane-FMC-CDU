@@ -98,6 +98,9 @@ void FMCManager::keyReleaseEvent(int row, int col) {
 	clearKeyPressTime = 0;
 }
 
+void FMCManager::rotaryEncTurnEvent(int count, int delta){
+	currentFMC->rotaryEncTurnEvent(count, delta);
+}
 void FMCManager::tick() {
 
 	time_t nowTime = time(NULL);
